@@ -2,7 +2,7 @@
   Renders a product media gallery with a large main stage and optional thumbnails.
 
   @param {product} product - The product to display
-  @param {string} layout - split, split_tall, or hero
+  @param {string} layout - split, split_tall, split_half, or hero
   @param {string} section_id - Section ID for unique element IDs
   @param {number} [hero_height] - Hero band height in rem when layout is hero
   @param {number} [overlay_opacity] - Hero overlay opacity percentage
@@ -131,6 +131,58 @@
         ></div>
       </div>
     </div>
+  {% elsif gallery_layout == 'split_half' %}
+    <div class="product-gallery__stack" data-gallery-zoom>
+      {% if product.media.size > 0 %}
+        {% for media in product.media %}
+          {% liquid
+            if media.alt != blank
+              assign media_alt = media.alt
+            else
+              assign media_alt = product.title
+            endif
+
+            if forloop.first
+              assign stack_loading = 'eager'
+              assign stack_fetchpriority = true
+            else
+              assign stack_loading = 'lazy'
+              assign stack_fetchpriority = false
+            endif
+          %}
+          <div
+            class="product-gallery__stack-item"
+            data-media-panel
+            data-media-id="{{ media.id }}"
+          >
+            {% case media.media_type %}
+              {% when 'image' %}
+                {% render 'product-gallery-zoom-link',
+                  media: media,
+                  media_alt: media_alt,
+                  max_image_width: max_image_width,
+                  image_widths: image_widths,
+                  image_sizes: image_sizes,
+                  loading: stack_loading,
+                  fetchpriority_high: stack_fetchpriority
+                %}
+              {% else %}
+                {{
+                  media
+                  | media_tag:
+                    image_size: '1600x',
+                    class: 'product-gallery__media-tag',
+                    toggleable: true
+                }}
+            {% endcase %}
+          </div>
+        {% endfor %}
+      {% else %}
+        <div class="product-gallery__stack-item product-gallery__placeholder" aria-hidden="true">
+          {{ 'product-1' | placeholder_svg_tag: class: 'product-gallery__img product-gallery__img--placeholder' }}
+        </div>
+      {% endif %}
+    </div>
   {% else %}
     <div class="product-gallery__layout">
       <div class="product-gallery__stage" data-gallery-zoom>
@@ -217,94 +269,16 @@
       {% endif %}
       </div>
 
-      {% if product.media.size > 1 %}
-        <div class="product-gallery__thumbs" role="list" aria-label="{{ 'products.gallery.thumbnails' | t }}">
-          {% for media in product.media %}
-            {% liquid
-              assign thumb_active = false
-              if initial_media and media.id == initial_media.id
-                assign thumb_active = true
-              elsif initial_media == blank and forloop.first
-                assign thumb_active = true
-              endif
-
-              if media.alt != blank
-                assign thumb_alt = media.alt
-              else
-                assign thumb_alt = product.title
-              endif
-            %}
-            <button
-              type="button"
-              class="product-gallery__thumb{% if thumb_active %} is-active{% endif %}"
-              role="listitem"
-              data-gallery-thumb
-              data-media-id="{{ media.id }}"
-              aria-label="{{ 'products.gallery.view_media' | t: index: forloop.index }}"
-              {% if thumb_active %}
-                aria-current="true"
-              {% endif %}
-            >
-              {{
-                media.preview_image
-                | image_url: width: 160
-                | image_tag:
-                  widths: '80, 160',
-                  sizes: '80px',
-                  loading: 'lazy',
-                  class: 'product-gallery__thumb-img',
-                  alt: thumb_alt
-              }}
-            </button>
-          {% endfor %}
-        </div>
-      {% endif %}
+      {% render 'product-gallery-thumbs',
+        product: product,
+        initial_media: initial_media,
+        show_scroll_arrows: true
+      %}
     </div>
   {% endif %}
 
   {% if gallery_layout == 'hero' %}
-    {% if product.media.size > 1 %}
-      <div class="product-gallery__thumbs" role="list" aria-label="{{ 'products.gallery.thumbnails' | t }}">
-        {% for media in product.media %}
-          {% liquid
-            assign thumb_active = false
-            if initial_media and media.id == initial_media.id
-              assign thumb_active = true
-            elsif initial_media == blank and forloop.first
-              assign thumb_active = true
-            endif
-
-            if media.alt != blank
-              assign thumb_alt = media.alt
-            else
-              assign thumb_alt = product.title
-            endif
-          %}
-          <button
-            type="button"
-            class="product-gallery__thumb{% if thumb_active %} is-active{% endif %}"
-            role="listitem"
-            data-gallery-thumb
-            data-media-id="{{ media.id }}"
-            aria-label="{{ 'products.gallery.view_media' | t: index: forloop.index }}"
-            {% if thumb_active %}
-              aria-current="true"
-            {% endif %}
-          >
-            {{
-              media.preview_image
-              | image_url: width: 160
-              | image_tag:
-                widths: '80, 160',
-                sizes: '80px',
-                loading: 'lazy',
-                class: 'product-gallery__thumb-img',
-                alt: thumb_alt
-            }}
-          </button>
-        {% endfor %}
-      </div>
-    {% endif %}
+    {% render 'product-gallery-thumbs', product: product, initial_media: initial_media %}
   {% endif %}
 </product-gallery>
 
@@ -337,13 +311,19 @@
       min-width: 0;
     }
 
-    .product-gallery__layout .product-gallery__thumbs {
-      order: -1;
+    .product-gallery__layout .product-gallery__thumbs-wrap {
+      display: flex;
       flex-direction: column;
-      flex-wrap: nowrap;
       flex-shrink: 0;
       align-self: flex-start;
+      order: -1;
+      gap: 0.25rem;
       width: var(--product-gallery-thumb-size);
+    }
+
+    .product-gallery__layout .product-gallery__thumbs {
+      flex-direction: column;
+      flex-wrap: nowrap;
       max-height: calc(
         var(--product-gallery-thumb-max-visible) * var(--product-gallery-thumb-size) +
           (var(--product-gallery-thumb-max-visible) - 1) * var(--product-gallery-thumb-gap)
@@ -351,8 +331,16 @@
       min-height: 0;
       overflow-x: hidden;
       overflow-y: auto;
-      scrollbar-width: thin;
+      scrollbar-width: none;
       -webkit-overflow-scrolling: touch;
+    }
+
+    .product-gallery__layout .product-gallery__thumbs::-webkit-scrollbar {
+      display: none;
+    }
+
+    .product-gallery__layout .product-gallery__thumbs-wrap--scrollable .product-gallery__thumbs-scroll {
+      display: flex;
     }
   }
 
@@ -421,6 +409,42 @@
     min-height: calc(100svh - var(--header-height, 0px) - var(--announcement-bar-height, 0px) - 8rem);
   }
 
+  .product-gallery--split_half {
+    min-width: 0;
+  }
+
+  .product-gallery__stack {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    min-width: 0;
+  }
+
+  .product-gallery__stack-item {
+    position: relative;
+    width: 100%;
+    background-color: color-mix(in srgb, currentColor 8%, transparent);
+  }
+
+  .product-gallery--split_half .product-gallery__stack-item .product-gallery__zoom-link,
+  .product-gallery--split_half .product-gallery__stack-item .product-gallery__media-tag {
+    display: block;
+    width: 100%;
+    height: auto;
+    aspect-ratio: auto;
+    object-fit: cover;
+  }
+
+  .product-gallery--split_half .product-gallery__stack-item .product-gallery__img {
+    width: 100%;
+    height: auto;
+    object-fit: cover;
+  }
+
+  .product-gallery--split_half .product-gallery__placeholder {
+    min-height: 50svh;
+  }
+
   .product-gallery__panel {
     position: absolute;
     inset: 0;
@@ -463,6 +487,46 @@
     height: auto;
     opacity: 0.35;
     object-fit: contain;
+  }
+
+  .product-gallery__thumbs-wrap {
+    display: contents;
+  }
+
+  .product-gallery__thumbs-scroll {
+    display: none;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 1.5rem;
+    padding: 0;
+    border: 0;
+    border-radius: 0.25rem;
+    background: color-mix(in srgb, var(--color-background, #fff) 92%, transparent);
+    color: currentcolor;
+    cursor: pointer;
+  }
+
+  .product-gallery__thumbs-scroll svg {
+    width: 1rem;
+    height: 1rem;
+  }
+
+  .product-gallery__thumbs-scroll--down svg {
+    transform: rotate(180deg);
+  }
+
+  .product-gallery__thumbs-scroll:hover {
+    color: var(--color-brand-rust, #c57639);
+  }
+
+  .product-gallery__thumbs-scroll:focus-visible {
+    outline: 2px solid var(--color-brand-rust, #c57639);
+    outline-offset: 2px;
+  }
+
+  .product-gallery__thumbs-scroll[hidden] {
+    display: none !important;
   }
 
   .product-gallery__thumbs {

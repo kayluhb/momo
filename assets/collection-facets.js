@@ -19,6 +19,8 @@ class FacetsFormComponent extends Component {
 
   disconnectedCallback() {
     super.disconnectedCallback();
+    this.refs.facetsForm.removeEventListener('change', this.#debouncedUpdate);
+    this.#debouncedUpdate.cancel();
     this.refs.facetsForm.removeEventListener('submit', this.#onSubmit);
     this.refs.facetsForm.removeEventListener('toggle', this.#onFilterToggle, true);
     document.removeEventListener('pointerdown', this.#onDocumentPointerDown, true);

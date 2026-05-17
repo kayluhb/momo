@@ -35,6 +35,9 @@ class CartItemsComponent extends HTMLElement {
 
   disconnectedCallback() {
     document.removeEventListener(ThemeEvents.cartUpdate, this.#handleCartUpdate);
+    this.removeEventListener('change', this.#debouncedChange);
+    this.removeEventListener('click', this.#onClick);
+    this.#debouncedChange.cancel();
   }
 
   get sectionId() {

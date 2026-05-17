@@ -3,13 +3,13 @@
 
   @param {product} product - The product to display
   @param {string} section_id - Section ID for form field IDs
-  @param {string} [layout] - split, split_tall, or hero (controls sticky buy column)
+  @param {string} [layout] - split, split_tall, split_half, or hero (controls sticky buy column)
 {% enddoc %}
 
 {% liquid
   assign buy_layout = layout | default: 'split'
   assign is_sticky = false
-  if buy_layout == 'split' or buy_layout == 'split_tall'
+  if buy_layout == 'split' or buy_layout == 'split_tall' or buy_layout == 'split_half'
     assign is_sticky = true
   endif
 
@@ -20,7 +20,7 @@
   endif
 %}
 
-<div class="product-buy{% if is_sticky %} product-buy--sticky{% endif %}">
+<div class="product-buy product-buy--{{ buy_layout }}{% if is_sticky %} product-buy--sticky{% endif %}">
   {% render 'breadcrumbs', product: product %}
 
   {% if eyebrow_text != blank %}
@@ -64,18 +64,6 @@
         {% endfor %}
       </select>
 
-      <label class="product-buy__label" for="product-quantity-{{ section_id }}">
-        {{ 'products.quantity_label' | t }}
-      </label>
-      <input
-        id="product-quantity-{{ section_id }}"
-        class="product-buy__quantity"
-        type="number"
-        name="quantity"
-        min="1"
-        value="1"
-      >
-
       <div class="product-buy__submit">
         {% assign add_to_cart_label = 'products.add_to_cart.label' | t %}
         {% render 'button',
@@ -98,6 +86,20 @@
     position: sticky;
     top: calc(var(--header-height, 0px) + 1rem);
     align-self: start;
+  }
+
+  .product-section__details .product-buy--sticky {
+    position: static;
+    top: auto;
+  }
+
+  .product-buy--split_half .product-buy__submit,
+  .product-buy--split_half .product-buy__payment {
+    max-width: none;
+  }
+
+  .product-buy--split_half .product-buy__select {
+    max-width: none;
   }
 
   .product-buy .breadcrumbs {
@@ -152,8 +154,7 @@
     font-weight: 600;
   }
 
-  .product-buy__select,
-  .product-buy__quantity {
+  .product-buy__select {
     width: 100%;
     max-width: 16rem;
     padding: 0.5rem 0.75rem;

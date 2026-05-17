@@ -103,8 +103,8 @@ class SectionRenderer {
   #cachePageSections() {
     for (const section of document.querySelectorAll('.shopify-section')) {
       const url = buildSectionRenderingURL(section.id);
-      if (this.#cache.get(url)) return;
-      if (containsShadowRoot(section)) return;
+      if (this.#cache.get(url)) continue;
+      if (containsShadowRoot(section)) continue;
 
       this.#cache.set(url, section.outerHTML);
     }

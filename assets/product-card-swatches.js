@@ -104,7 +104,7 @@ onDocumentReady(() => {
 
   document.addEventListener('pointerover', handlePointerOver);
   document.addEventListener('pointerout', handlePointerOut);
-  document.addEventListener(ThemeEvents.filterUpdate, () => {
+  document.addEventListener(ThemeEvents.FilterUpdate, () => {
     initCards(document);
   });
   document.addEventListener('shopify:section:load', (event) => {

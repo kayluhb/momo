@@ -320,6 +320,7 @@
       "layout_options": {
         "split": "Split — image and details",
         "split_tall": "Split tall — full-height image",
+        "split_half": "Split half — 50/50 viewport, sticky details",
         "hero": "Hero — full-width image band"
       },
       "image_position_label": "Image position",

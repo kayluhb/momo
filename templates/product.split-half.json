@@ -1,0 +1,15 @@
+{
+  "sections": {
+    "main": {
+      "type": "product",
+      "settings": {
+        "layout": "split_half",
+        "image_position": "left",
+        "color_scheme": "canvas"
+      }
+    }
+  },
+  "order": [
+    "main"
+  ]
+}

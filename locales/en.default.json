@@ -40,7 +40,9 @@
     "gallery": {
       "thumbnails": "Product images",
       "view_media": "View image {{ index }}",
-      "zoom": "Zoom in on image"
+      "zoom": "Zoom in on image",
+      "scroll_up": "Scroll thumbnails up",
+      "scroll_down": "Scroll thumbnails down"
     }
   },
   "sections": {

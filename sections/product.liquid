@@ -33,6 +33,22 @@
           layout: 'hero'
         %}
       </div>
+    {% elsif product_layout == 'split_half' %}
+      <div class="product-section__split-half product-section__split-half--image-{{ image_position }}">
+        {% render 'product-gallery',
+          product: product,
+          layout: 'split_half',
+          section_id: section.id
+        %}
+
+        <div class="product-section__details">
+          {% render 'product-buy-box',
+            product: product,
+            section_id: section.id,
+            layout: 'split_half'
+          %}
+        </div>
+      </div>
     {% else %}
       <div class="section-inner product-section__inner product-section__inner--image-{{ image_position }}">
         {% render 'product-gallery',
@@ -62,7 +78,8 @@
     }
   }
 
-  .product-section--hero {
+  .product-section--hero,
+  .product-section--split_half {
     padding-block: 0;
   }
 
@@ -84,6 +101,38 @@
 
     .product-section__inner--image-right .product-gallery {
       order: 2;
+    }
+  }
+
+  .product-section__split-half {
+    display: grid;
+    gap: 0;
+    align-items: start;
+  }
+
+  @media (min-width: 990px) {
+    .product-section__split-half {
+      grid-template-columns: 1fr 1fr;
+      min-height: calc(100svh - var(--header-height, 0px) - var(--announcement-bar-height, 0px));
+    }
+
+    .product-section__split-half--image-right .product-gallery {
+      order: 2;
+    }
+
+    .product-section__details {
+      position: sticky;
+      top: calc(var(--header-height, 0px) + var(--announcement-bar-height, 0px));
+      align-self: start;
+      box-sizing: border-box;
+      min-height: calc(100svh - var(--header-height, 0px) - var(--announcement-bar-height, 0px));
+      padding: 2.5rem clamp(1.5rem, 4vw, 3.5rem);
+    }
+  }
+
+  @media (max-width: 989px) {
+    .product-section__details {
+      padding: 2.5rem var(--page-margin);
     }
   }
 
@@ -117,6 +166,7 @@
       "options": [
         { "value": "split", "label": "t:sections.product.layout_options.split" },
         { "value": "split_tall", "label": "t:sections.product.layout_options.split_tall" },
+        { "value": "split_half", "label": "t:sections.product.layout_options.split_half" },
         { "value": "hero", "label": "t:sections.product.layout_options.hero" }
       ]
     },

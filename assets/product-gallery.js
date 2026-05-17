@@ -3,10 +3,15 @@ import PhotoSwipeLightbox from '@theme/photoswipe-lightbox';
 class ProductGallery extends HTMLElement {
   /** @type {PhotoSwipeLightbox | null} */
   #lightbox = null;
+  /** @type {ResizeObserver | null} */
+  #thumbsResizeObserver = null;
 
   connectedCallback() {
     this.addEventListener('click', this.#onClick);
     this.#initLightbox();
+    this.#initThumbsScroll();
+
+    if (this.dataset.layout === 'split_half') return;
 
     const initialMediaId = this.dataset.initialMediaId;
     if (initialMediaId) {
@@ -23,6 +28,8 @@ class ProductGallery extends HTMLElement {
   disconnectedCallback() {
     this.removeEventListener('click', this.#onClick);
     this.#destroyLightbox();
+    this.#thumbsResizeObserver?.disconnect();
+    this.#thumbsResizeObserver = null;
   }
 
   /** @param {MouseEvent} event */
@@ -33,6 +40,18 @@ class ProductGallery extends HTMLElement {
     if (target.closest('[data-gallery-zoom-button]')) {
       event.preventDefault();
       this.#openZoom();
+      return;
+    }
+
+    if (target.closest('[data-gallery-thumbs-up]')) {
+      event.preventDefault();
+      this.#scrollThumbs(-1);
+      return;
+    }
+
+    if (target.closest('[data-gallery-thumbs-down]')) {
+      event.preventDefault();
+      this.#scrollThumbs(1);
       return;
     }
 
@@ -119,6 +138,62 @@ class ProductGallery extends HTMLElement {
     });
 
     this.#updateZoomButton(mediaId);
+    this.#scrollActiveThumbIntoView();
+  }
+
+  #initThumbsScroll() {
+    const wrap = this.querySelector('[data-gallery-thumbs-wrap]');
+    const scroller = wrap?.querySelector('[data-gallery-thumbs]');
+    if (!(wrap instanceof HTMLElement) || !(scroller instanceof HTMLElement)) return;
+
+    const update = () => this.#updateThumbsScrollState(wrap, scroller);
+    scroller.addEventListener('scroll', update, { passive: true });
+    this.#thumbsResizeObserver = new ResizeObserver(update);
+    this.#thumbsResizeObserver.observe(scroller);
+    update();
+  }
+
+  /** @param {HTMLElement} wrap @param {HTMLElement} scroller */
+  #updateThumbsScrollState(wrap, scroller) {
+    const upButton = wrap.querySelector('[data-gallery-thumbs-up]');
+    const downButton = wrap.querySelector('[data-gallery-thumbs-down]');
+    const canScroll = scroller.scrollHeight > scroller.clientHeight + 1;
+
+    wrap.classList.toggle('product-gallery__thumbs-wrap--scrollable', canScroll);
+
+    if (upButton instanceof HTMLButtonElement) {
+      upButton.hidden = !canScroll || scroller.scrollTop <= 1;
+    }
+
+    if (downButton instanceof HTMLButtonElement) {
+      downButton.hidden =
+        !canScroll || scroller.scrollTop + scroller.clientHeight >= scroller.scrollHeight - 1;
+    }
+  }
+
+  /** @param {number} direction */
+  #scrollThumbs(direction) {
+    const scroller = this.querySelector('[data-gallery-thumbs]');
+    if (!(scroller instanceof HTMLElement)) return;
+
+    const thumb = scroller.querySelector('[data-gallery-thumb]');
+    const gap = Number.parseFloat(getComputedStyle(scroller).rowGap || getComputedStyle(scroller).gap) || 8;
+    const step = (thumb instanceof HTMLElement ? thumb.offsetHeight : 64) + gap;
+
+    scroller.scrollBy({ top: direction * step, behavior: 'smooth' });
+  }
+
+  #scrollActiveThumbIntoView() {
+    const scroller = this.querySelector('[data-gallery-thumbs]');
+    const activeThumb = scroller?.querySelector('[data-gallery-thumb].is-active');
+    if (!(scroller instanceof HTMLElement) || !(activeThumb instanceof HTMLElement)) return;
+
+    activeThumb.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+
+    const wrap = this.querySelector('[data-gallery-thumbs-wrap]');
+    if (wrap instanceof HTMLElement) {
+      this.#updateThumbsScrollState(wrap, scroller);
+    }
   }
 
   /** @param {string} mediaId */
