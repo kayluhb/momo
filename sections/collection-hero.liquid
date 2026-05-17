@@ -14,11 +14,6 @@
     assign hero_description = collection.description
   endif
 
-  assign featured_product = section.settings.featured_product
-  if featured_product == blank and collection.products_count > 0
-    assign featured_product = collection.products.first
-  endif
-
   assign overlay_opacity = section.settings.overlay_opacity
   if overlay_opacity == blank
     assign overlay_opacity = 40
@@ -37,7 +32,7 @@
   class="collection-hero hero hero--parallax full-width"
   data-hero-parallax
   data-collection-hero
-  style="--collection-hero-height: {{ section.settings.hero_height }}vh;"
+  style="--collection-hero-height: {{ section.settings.hero_height }}rem;"
   {{ section.shopify_attributes }}
 >
   <div class="collection-hero__media hero__media">
@@ -68,39 +63,11 @@
   </div>
 
   <div class="collection-hero__content">
-    <div class="collection-hero__copy">
-      <h1 class="collection-hero__heading">{{ hero_heading | escape }}</h1>
-      {% if hero_description != blank %}
-        <div class="collection-hero__description rte">
-          {{ hero_description }}
-        </div>
-      {% endif %}
-    </div>
-
-    {% if featured_product != blank and section.settings.show_featured_product %}
-      <aside class="collection-hero__featured">
-        <p class="collection-hero__featured-label">{{ 'sections.collection_hero.featured_product' | t }}</p>
-        <a class="collection-hero__featured-card" href="{{ featured_product.url }}">
-          {% if featured_product.featured_image %}
-            <div class="collection-hero__featured-media">
-              {{
-                featured_product.featured_image
-                | image_url: width: 160, height: 160, crop: 'center'
-                | image_tag:
-                  widths: '80, 120, 160',
-                  sizes: '80px',
-                  loading: 'lazy',
-                  class: 'collection-hero__featured-image',
-                  alt: featured_product.featured_image.alt | default: featured_product.title
-              }}
-            </div>
-          {% endif %}
-          <div class="collection-hero__featured-details">
-            <p class="collection-hero__featured-title">{{ featured_product.title | escape }}</p>
-            <p class="collection-hero__featured-price">{{ featured_product.price | money }}</p>
-          </div>
-        </a>
-      </aside>
+    <h1 class="collection-hero__heading">{{ hero_heading | escape }}</h1>
+    {% if hero_description != blank %}
+      <div class="collection-hero__description rte">
+        {{ hero_description }}
+      </div>
     {% endif %}
   </div>
 </div>
@@ -111,7 +78,7 @@
     display: flex;
     flex-direction: column;
     justify-content: flex-end;
-    min-height: var(--collection-hero-height, 45vh);
+    min-height: var(--collection-hero-height, 18rem);
     overflow: hidden;
   }
 
@@ -167,35 +134,25 @@
   .collection-hero__content {
     position: relative;
     z-index: 2;
-    display: flex;
-    flex-wrap: wrap;
-    align-items: flex-end;
-    justify-content: space-between;
-    gap: 1.5rem 2rem;
     width: 100%;
     max-width: min(calc(var(--page-width) - var(--page-margin) * 2), calc(100% - var(--page-margin) * 2));
     margin-inline: auto;
-    padding: calc(var(--header-height) + 2.5rem) var(--page-margin) clamp(2rem, 4vw, 3rem);
+    padding: calc(var(--header-height) + 1.5rem) var(--page-margin) 2rem;
     color: #fff;
   }
 
-  .collection-hero__copy {
-    flex: 1 1 16rem;
-    max-width: 42rem;
-  }
-
   .collection-hero__heading {
-    margin: 0 0 0.75rem;
-    font-size: clamp(2rem, 4vw + 0.75rem, 3.25rem);
-    line-height: 1.05;
+    margin: 0 0 0.5rem;
+    font-size: clamp(1.75rem, 3vw + 0.5rem, 2.5rem);
+    line-height: 1.1;
     font-weight: 700;
   }
 
   .collection-hero__description {
     margin: 0;
     max-width: 36rem;
-    font-size: clamp(0.9375rem, 0.5vw + 0.85rem, 1.125rem);
-    line-height: 1.55;
+    font-size: clamp(0.875rem, 0.35vw + 0.8rem, 1rem);
+    line-height: 1.5;
     color: rgb(255 255 255 / 88%);
   }
 
@@ -204,90 +161,7 @@
   }
 
   .collection-hero__description p + p {
-    margin-top: 0.75rem;
-  }
-
-  .collection-hero__featured {
-    flex: 0 1 20rem;
-    width: min(100%, 20rem);
-    margin-left: auto;
-  }
-
-  .collection-hero__featured-label {
-    margin: 0 0 0.5rem;
-    font-size: 0.6875rem;
-    font-weight: 600;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    text-align: right;
-    color: rgb(255 255 255 / 72%);
-  }
-
-  .collection-hero__featured-card {
-    display: grid;
-    grid-template-columns: 4.5rem 1fr;
-    gap: 0.875rem;
-    align-items: center;
-    padding: 0.875rem;
-    border-radius: 0.25rem;
-    background: rgb(0 0 0 / 42%);
-    color: #fff;
-    text-decoration: none;
-    backdrop-filter: blur(8px);
-    transition: background 200ms ease, transform 200ms ease;
-  }
-
-  .collection-hero__featured-card:hover {
-    background: rgb(0 0 0 / 54%);
-    transform: translateY(-1px);
-  }
-
-  .collection-hero__featured-card:focus-visible {
-    outline: 2px solid rgb(255 255 255 / 70%);
-    outline-offset: 3px;
-  }
-
-  .collection-hero__featured-media {
-    overflow: hidden;
-    width: 4.5rem;
-    height: 4.5rem;
-    border-radius: 0.125rem;
-    background: rgb(255 255 255 / 8%);
-  }
-
-  .collection-hero__featured-image {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-  }
-
-  .collection-hero__featured-title {
-    margin: 0 0 0.25rem;
-    font-size: 0.9375rem;
-    font-weight: 700;
-    line-height: 1.3;
-  }
-
-  .collection-hero__featured-price {
-    margin: 0;
-    font-size: 0.875rem;
-    color: rgb(255 255 255 / 78%);
-  }
-
-  @media (max-width: 47.99rem) {
-    .collection-hero__content {
-      flex-direction: column;
-      align-items: stretch;
-    }
-
-    .collection-hero__featured {
-      width: 100%;
-      margin-left: 0;
-    }
-
-    .collection-hero__featured-label {
-      text-align: left;
-    }
+    margin-top: 0.5rem;
   }
 
   @media (prefers-reduced-motion: reduce) {
@@ -332,12 +206,12 @@
     {
       "type": "range",
       "id": "hero_height",
-      "min": 30,
-      "max": 70,
-      "step": 5,
-      "unit": "vh",
+      "min": 14,
+      "max": 28,
+      "step": 2,
+      "unit": "rem",
       "label": "t:sections.collection_hero.settings.hero_height_label",
-      "default": 45
+      "default": 18
     },
     {
       "type": "text",
@@ -350,18 +224,6 @@
       "id": "description",
       "label": "t:sections.collection_hero.settings.description_label",
       "info": "t:sections.collection_hero.settings.description_info"
-    },
-    {
-      "type": "checkbox",
-      "id": "show_featured_product",
-      "label": "t:sections.collection_hero.settings.show_featured_product_label",
-      "default": true
-    },
-    {
-      "type": "product",
-      "id": "featured_product",
-      "label": "t:sections.collection_hero.settings.featured_product_label",
-      "info": "t:sections.collection_hero.settings.featured_product_info"
     }
   ],
   "presets": [

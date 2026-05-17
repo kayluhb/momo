@@ -313,10 +313,7 @@
         "heading_label": "Heading",
         "heading_info": "Uses the collection title when empty.",
         "description_label": "Description",
-        "description_info": "Uses the collection description when empty.",
-        "show_featured_product_label": "Show featured product",
-        "featured_product_label": "Featured product",
-        "featured_product_info": "Uses the first product in the collection when empty."
+        "description_info": "Uses the collection description when empty."
       },
       "presets": {
         "default_name": "Collection hero"

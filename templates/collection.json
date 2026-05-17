@@ -13,8 +13,7 @@
       "type": "collection-hero",
       "settings": {
         "overlay_opacity": 40,
-        "hero_height": 45,
-        "show_featured_product": true
+        "hero_height": 18
       }
     },
     "main": {
