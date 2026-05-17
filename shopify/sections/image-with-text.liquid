@@ -30,7 +30,7 @@
 
     <div class="image-with-text__content">
       {% if section.settings.eyebrow != blank %}
-        <p class="image-with-text__eyebrow">{{ section.settings.eyebrow | escape }}</p>
+        <p class="image-with-text__eyebrow type-eyebrow">{{ section.settings.eyebrow | escape }}</p>
       {% endif %}
 
       {% if section.settings.heading != blank %}
@@ -100,10 +100,6 @@
 
   .image-with-text__eyebrow {
     margin: 0 0 0.5rem;
-    font-size: 0.75rem;
-    font-weight: 700;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
     color: var(--color-brand-rust, #c57639);
   }
 
@@ -113,10 +109,8 @@
 
   .image-with-text__heading {
     margin: 0 0 1rem;
-    font-family: var(--font-display--family, var(--font-primary--family));
-    font-size: clamp(1.75rem, 3.5vw, 2.25rem);
-    font-weight: 400;
-    line-height: 1.15;
+    font-size: clamp(1.875rem, 3.5vw, 2.375rem);
+    line-height: 1.1;
   }
 
   .image-with-text__text {

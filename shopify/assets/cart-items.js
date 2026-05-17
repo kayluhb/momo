@@ -75,7 +75,15 @@ class CartItemsComponent extends HTMLElement {
 
     try {
       const response = await fetch(Theme.routes.cart_change_url, fetchConfig('json', { body }));
-      const data = JSON.parse(await response.text());
+      const contentType = response.headers.get('content-type') || '';
+      const responseText = await response.text();
+
+      if (!response.ok || !contentType.includes('json')) {
+        console.error('Cart update failed', response.status, responseText.slice(0, 300));
+        return;
+      }
+
+      const data = JSON.parse(responseText);
 
       if (data.errors) {
         console.error(data.errors);

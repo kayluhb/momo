@@ -143,11 +143,8 @@
 
   .faq__heading {
     margin: 0 0 1rem;
-    font-family: var(--font-display--family, var(--font-primary--family));
-    font-size: clamp(1.75rem, 3.5vw, 2.375rem);
-    font-weight: 700;
-    line-height: 1.15;
-    letter-spacing: -0.02em;
+    font-size: clamp(1.875rem, 3.5vw, 2.5rem);
+    line-height: 1.08;
   }
 
   .faq__subheading {
@@ -167,7 +164,7 @@
   }
 
   .faq__subheading :where(a) {
-    font-weight: 600;
+    font-weight: var(--font-weight-bold, 700);
     color: var(--color-brand-rust, #c57639);
     text-decoration: underline;
     text-underline-offset: 0.15em;
@@ -260,7 +257,7 @@
   }
 
   .faq__support-contact a {
-    font-weight: 600;
+    font-weight: var(--font-weight-bold, 700);
     color: var(--color-brand-rust, #c57639);
     text-decoration: underline;
     text-underline-offset: 0.15em;
@@ -308,9 +305,8 @@
     justify-content: space-between;
     gap: 1rem;
     padding: 1.125rem 1.25rem;
-    font-size: 0.9375rem;
-    font-weight: 600;
-    line-height: 1.4;
+    font-size: 1rem;
+    line-height: 1.35;
     list-style: none;
     cursor: pointer;
   }

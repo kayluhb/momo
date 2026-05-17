@@ -59,8 +59,8 @@
     "text_selection_info": "Highlight style when customers select text on the storefront.",
     "text_style": "Text style",
     "text": "Text",
-    "use_adobe_degular": "Use Adobe Fonts (Degular)",
-    "use_adobe_degular_info": "Loads Degular Display for headings and Degular for body text via Typekit."
+    "use_adobe_degular": "Use Degular fonts",
+    "use_adobe_degular_info": "Loads self-hosted Degular Display Thin (headings) and Degular Thin (body) from theme assets."
   },
   "options": {
     "alignment": {

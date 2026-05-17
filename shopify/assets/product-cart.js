@@ -81,6 +81,22 @@ async function handleProductFormSubmit(form) {
   try {
     const fetchCfg = fetchConfig('javascript', { body: formData });
     const response = await fetch(Theme.routes.cart_add_url, fetchCfg);
+    const contentType = response.headers.get('content-type') || '';
+
+    if (!response.ok || !contentType.includes('json')) {
+      const body = await response.text();
+      console.error('Cart add failed', response.status, body.slice(0, 300));
+      showFormMessage(form, Theme.translations.add_to_cart_error);
+      form.dispatchEvent(
+        new CartAddEvent({}, form.id || '', {
+          didError: true,
+          source: 'product-cart',
+          variantId: formData.get('id')?.toString(),
+        })
+      );
+      return;
+    }
+
     const data = await response.json();
 
     if (data.status) {

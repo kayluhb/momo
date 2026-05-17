@@ -18,3 +18,6 @@ pnpm-debug.log*
 # Shopify CLI (when run from the repository root)
 .shopify/
 .shopify.lock
+
+# Desktop font files (Typekit — do not commit; purchase a desktop license for production use)
+fonts/degular-opentype/

@@ -157,6 +157,7 @@ export function fetchConfig(type = 'json', config = {}) {
     method: 'POST',
     headers: /** @type {HeadersInit} */ (headers),
     body: config.body,
+    credentials: 'same-origin',
   };
 }
 
