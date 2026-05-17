@@ -176,49 +176,95 @@
         </div>
       {% endif %}
     </div>
+
+      {% if product.media.size > 1 %}
+        <div class="product-gallery__thumbs" role="list" aria-label="{{ 'products.gallery.thumbnails' | t }}">
+          {% for media in product.media %}
+            {% liquid
+              assign thumb_active = false
+              if initial_media and media.id == initial_media.id
+                assign thumb_active = true
+              elsif initial_media == blank and forloop.first
+                assign thumb_active = true
+              endif
+
+              if media.alt != blank
+                assign thumb_alt = media.alt
+              else
+                assign thumb_alt = product.title
+              endif
+            %}
+            <button
+              type="button"
+              class="product-gallery__thumb{% if thumb_active %} is-active{% endif %}"
+              role="listitem"
+              data-gallery-thumb
+              data-media-id="{{ media.id }}"
+              aria-label="{{ 'products.gallery.view_media' | t: index: forloop.index }}"
+              {% if thumb_active %}
+                aria-current="true"
+              {% endif %}
+            >
+              {{
+                media.preview_image
+                | image_url: width: 160
+                | image_tag:
+                  widths: '80, 160',
+                  sizes: '80px',
+                  loading: 'lazy',
+                  class: 'product-gallery__thumb-img',
+                  alt: thumb_alt
+              }}
+            </button>
+          {% endfor %}
+        </div>
+      {% endif %}
+    </div>
   {% endif %}
 
-  {% if product.media.size > 1 %}
-    <div class="product-gallery__thumbs" role="list" aria-label="{{ 'products.gallery.thumbnails' | t }}">
-      {% for media in product.media %}
-        {% liquid
-          assign thumb_active = false
-          if initial_media and media.id == initial_media.id
-            assign thumb_active = true
-          elsif initial_media == blank and forloop.first
-            assign thumb_active = true
-          endif
+  {% if gallery_layout == 'hero' %}
+    {% if product.media.size > 1 %}
+      <div class="product-gallery__thumbs" role="list" aria-label="{{ 'products.gallery.thumbnails' | t }}">
+        {% for media in product.media %}
+          {% liquid
+            assign thumb_active = false
+            if initial_media and media.id == initial_media.id
+              assign thumb_active = true
+            elsif initial_media == blank and forloop.first
+              assign thumb_active = true
+            endif
 
-          if media.alt != blank
-            assign thumb_alt = media.alt
-          else
-            assign thumb_alt = product.title
-          endif
-        %}
-        <button
-          type="button"
-          class="product-gallery__thumb{% if thumb_active %} is-active{% endif %}"
-          role="listitem"
-          data-gallery-thumb
-          data-media-id="{{ media.id }}"
-          aria-label="{{ 'products.gallery.view_media' | t: index: forloop.index }}"
-          {% if thumb_active %}
-            aria-current="true"
-          {% endif %}
-        >
-          {{
-            media.preview_image
-            | image_url: width: 160
-            | image_tag:
-              widths: '80, 160',
-              sizes: '80px',
-              loading: 'lazy',
-              class: 'product-gallery__thumb-img',
-              alt: thumb_alt
-          }}
-        </button>
-      {% endfor %}
-    </div>
+            if media.alt != blank
+              assign thumb_alt = media.alt
+            else
+              assign thumb_alt = product.title
+            endif
+          %}
+          <button
+            type="button"
+            class="product-gallery__thumb{% if thumb_active %} is-active{% endif %}"
+            role="listitem"
+            data-gallery-thumb
+            data-media-id="{{ media.id }}"
+            aria-label="{{ 'products.gallery.view_media' | t: index: forloop.index }}"
+            {% if thumb_active %}
+              aria-current="true"
+            {% endif %}
+          >
+            {{
+              media.preview_image
+              | image_url: width: 160
+              | image_tag:
+                widths: '80, 160',
+                sizes: '80px',
+                loading: 'lazy',
+                class: 'product-gallery__thumb-img',
+                alt: thumb_alt
+            }}
+          </button>
+        {% endfor %}
+      </div>
+    {% endif %}
   {% endif %}
 </product-gallery>
 
@@ -226,8 +272,38 @@
   .product-gallery {
     display: flex;
     flex-direction: column;
+    min-width: 0;
+  }
+
+  .product-gallery__layout {
+    display: flex;
+    flex-direction: column;
     gap: 0.75rem;
     min-width: 0;
+  }
+
+  @media (min-width: 750px) {
+    .product-gallery__layout {
+      flex-direction: row;
+      align-items: flex-start;
+    }
+
+    .product-gallery__layout .product-gallery__stage {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .product-gallery__layout .product-gallery__thumbs {
+      order: -1;
+      flex-direction: column;
+      flex-wrap: nowrap;
+      flex-shrink: 0;
+      width: 4rem;
+      max-height: 100%;
+      overflow-x: hidden;
+      overflow-y: auto;
+      scrollbar-width: thin;
+    }
   }
 
   .product-gallery__stage {
