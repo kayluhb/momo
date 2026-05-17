@@ -108,7 +108,7 @@
     </div>
   {% else %}
     <div class="product-gallery__layout">
-    <div class="product-gallery__stage">
+      <div class="product-gallery__stage">
       {% if product.media.size > 0 %}
         {% for media in product.media %}
           {% liquid
@@ -175,7 +175,7 @@
           {{ 'product-1' | placeholder_svg_tag: class: 'product-gallery__img product-gallery__img--placeholder' }}
         </div>
       {% endif %}
-    </div>
+      </div>
 
       {% if product.media.size > 1 %}
         <div class="product-gallery__thumbs" role="list" aria-label="{{ 'products.gallery.thumbnails' | t }}">
