@@ -8,7 +8,9 @@
 <h1>{{ 'search.title' | t }}</h1>
 
 <form action="{{ routes.search_url }}" method="get" role="search">
+  <label class="sr-only" for="SearchInput-{{ section.id }}">{{ 'search.label' | t }}</label>
   <input
+    id="SearchInput-{{ section.id }}"
     type="search"
     size="50"
     name="q"
@@ -31,7 +33,8 @@
           <div class="search-result">
             {% assign featured_image = result.featured_image | default: result.image %}
             {% if featured_image %}
-              {% render 'image', class: 'search-result__image', image: featured_image, url: result.url, width: 400 %}
+              {% assign result_image_alt = featured_image.alt | default: result.title %}
+              {% render 'image', class: 'search-result__image', image: featured_image, url: result.url, width: 400, alt: result_image_alt %}
             {% endif %}
             <div class="search-result__content">
               <p>

@@ -6,10 +6,6 @@
 
   assign header_text_color = section.settings.text_color | default: 'steel'
   assign header_classes = 'site-header full-width z-50 flex w-full min-h-0 justify-center [&_a]:text-inherit [&_svg]:text-inherit'
-
-  unless is_homepage
-    assign header_classes = header_classes | append: ' site-header--scrolled'
-  endunless
 %}
 
 <header
@@ -20,13 +16,20 @@
     data-site-header-scroll
   {% endif %}
 >
-  <div class="site-header__inner flex min-h-0 w-full items-center gap-4">
+  <div class="site-header__inner flex min-h-0 w-full flex-nowrap items-center gap-4">
     <nav
-      class="site-header__nav flex min-h-0 min-w-0 flex-1 flex-wrap items-center justify-start gap-4 text-sm [&_a]:relative [&_a]:inline-flex [&_a]:items-center [&_a]:justify-center [&_a]:font-bold [&_a]:no-underline [&_a]:hover:text-brand-rust"
+      class="site-header__nav flex min-h-0 min-w-0 flex-1 flex-nowrap items-center justify-start gap-4 text-sm [&_a]:relative [&_a]:inline-flex [&_a]:items-center [&_a]:justify-center [&_a]:font-bold [&_a]:no-underline [&_a]:hover:text-brand-rust"
       aria-label="{{ 'sections.header.main_navigation' | t }}"
     >
       {% for link in section.settings.menu.links %}
-        {{ link.title | link_to: link.url }}
+        <a
+          href="{{ link.url }}"
+          {% if link.active %}
+            aria-current="page"
+          {% endif %}
+        >
+          {{ link.title }}
+        </a>
       {% endfor %}
     </nav>
 
@@ -38,7 +41,7 @@
         {{
           settings.logo
           | image_url: width: 400
-          | image_tag: alt: shop.name, class: 'site-header__logo-mark block h-auto w-auto max-w-[min(12rem,40vw)] object-contain'
+          | image_tag: alt: shop.name, class: 'site-header__logo-mark object-contain'
         }}
       {% else %}
         <span class="sr-only">{{ shop.name }}</span>
@@ -59,65 +62,68 @@
         type="button"
         class="site-header__icon-btn"
         data-cart-drawer-open
-        aria-label="{{ 'cart.drawer_title' | t }}"
+        aria-label="{% if cart.item_count == 0 %}{{ 'cart.drawer_title' | t }}{% elsif cart.item_count == 1 %}{{ 'cart.drawer_title_one' | t }}{% else %}{{ 'cart.drawer_title_with_count' | t: count: cart.item_count }}{% endif %}"
       >
         <span data-hydration-key="header-cart" class="site-header__cart-badge">
           {% if cart.item_count > 0 %}
-            <sup class="absolute left-full max-w-[var(--page-margin)] overflow-hidden">{{ cart.item_count }}</sup>
+            <sup class="absolute left-full max-w-[var(--page-margin)] overflow-hidden" aria-hidden="true">{{ cart.item_count }}</sup>
           {% endif %}
         </span>
 
-        {{ 'icon-cart.svg' | inline_asset_content }}
+        <span class="site-header__icon-svg" aria-hidden="true">{{ 'icon-cart.svg' | inline_asset_content }}</span>
       </button>
     </div>
   </div>
 </header>
 
 {% style %}
-  .shopify-section-group-header-group {
+  /* Shopify section groups have no wrapper — only this section is sticky. */
+  .shopify-section.header-section {
     position: sticky;
     top: 0;
-    left: 0;
-    right: 0;
     z-index: 50;
     width: 100%;
     margin: 0;
     padding: 0;
-  }
-
-  .shopify-section-group-header-group .shopify-section {
-    margin: 0;
-    padding: 0;
     background: transparent;
+    align-self: flex-start;
   }
 
-  /* Homepage hero: fixed overlay so main/hero start at viewport top (no body gap). */
-  body:has(.hero) .shopify-section-group-header-group {
-    position: fixed;
-  }
-
-  body:not(:has(.hero)) .shopify-section-group-header-group {
-    margin-bottom: calc(-1 * var(--header-height-scrolled));
-  }
-
-  body:not(:has(.hero)) main {
-    padding-top: var(--header-height-scrolled);
-  }
-
-  @property --header-icon-scale {
-    syntax: '<number>';
-    inherits: false;
-    initial-value: 1;
+  .template-index main {
+    margin-top: calc(-1 * var(--header-height));
   }
 
   .site-header {
-    --header-icon-scale: 1;
-    padding-block: var(--header-padding-y);
+    box-sizing: border-box;
+    padding-block: var(--header-padding-y-scrolled);
+    background-color: #fff;
+    color: var(--color-brand-steel);
     transition:
       padding 250ms ease,
       background-color 200ms ease,
-      color 200ms ease,
-      --header-icon-scale 250ms ease;
+      color 200ms ease;
+  }
+
+  .template-index .site-header:not(.site-header--scrolled) {
+    padding-block: var(--header-padding-y);
+    background-color: transparent;
+    color: #fff;
+    transition: none;
+  }
+
+  .template-index .site-header.site-header--scrolled {
+    color: var(--color-brand-steel);
+    transition:
+      padding 250ms ease,
+      background-color 200ms ease,
+      color 200ms ease;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .site-header,
+    .site-header__logo-mark {
+      transition: none;
+    }
   }
 
   .site-header__inner {
@@ -126,30 +132,29 @@
     padding-inline: var(--page-margin);
   }
 
-  .site-header--scrolled {
-    --header-icon-scale: var(--header-icon-scale-scrolled);
-    padding-block: var(--header-padding-y-scrolled);
-    background-color: #fff;
-    color: var(--color-brand-steel);
-  }
-
   .site-header__logo-mark {
     display: block;
-    max-height: var(--header-logo-max-height);
+    max-height: var(--header-logo-max-height-scrolled);
     width: auto;
+    max-width: min(12rem, 40vw);
     transition: max-height 250ms ease;
   }
 
-  .site-header--scrolled .site-header__logo-mark {
-    max-height: var(--header-logo-max-height-scrolled);
+  .template-index .site-header:not(.site-header--scrolled) .site-header__logo-mark {
+    max-height: var(--header-logo-max-height);
+    transition: none;
   }
 
-  .site-header__logo-mark :where(svg) {
+  .template-index .site-header.site-header--scrolled .site-header__logo-mark {
+    transition: max-height 250ms ease;
+  }
+
+  .site-header__logo-mark :where(img, svg) {
     display: block;
-    height: auto;
-    max-height: inherit;
     width: auto;
     max-width: min(12rem, 40vw);
+    height: auto;
+    max-height: inherit;
   }
 
   .site-header__icon-btn,
@@ -159,16 +164,19 @@
     flex-shrink: 0;
     align-items: center;
     justify-content: center;
-    width: var(--header-icon-size);
-    height: var(--header-icon-size);
+    width: var(--header-icon-size-scrolled);
+    height: var(--header-icon-size-scrolled);
     line-height: 0;
     color: inherit;
-    transform: scale(var(--header-icon-scale)) translateZ(0);
-    transform-origin: center;
+    transform: none;
     backface-visibility: hidden;
-    /* Scale is driven only by --header-icon-scale on .site-header (no transform transition here).
-       transition: none overrides Tailwind base :where(a) transform/color transitions that fought it. */
     transition: none;
+  }
+
+  .template-index .site-header:not(.site-header--scrolled) .site-header__icon-btn,
+  .template-index .site-header:not(.site-header--scrolled) .site-header__utilities shopify-account {
+    width: var(--header-icon-size);
+    height: var(--header-icon-size);
   }
 
   .site-header__icon-btn {
@@ -183,6 +191,15 @@
     color: var(--color-brand-rust);
   }
 
+  .site-header__icon-btn:focus-visible {
+    outline: 2px solid var(--color-brand-rust);
+    outline-offset: 2px;
+  }
+
+  .site-header__icon-svg {
+    display: contents;
+  }
+
   .site-header__icon-btn :where(svg),
   .site-header__account-trigger :where(svg) {
     display: block;
@@ -191,8 +208,8 @@
   }
 
   .site-header__utilities shopify-account {
-    --shopify-account-avatar-size: var(--header-icon-size);
-    --shopify-account-signed-in-avatar-size: var(--header-icon-size);
+    --shopify-account-avatar-size: var(--header-icon-size-scrolled);
+    --shopify-account-signed-in-avatar-size: var(--header-icon-size-scrolled);
     --shopify-account-color-accent: currentcolor;
     --shopify-account-color-accent-hover: var(--color-brand-rust);
     --shopify-account-color-border: transparent;
@@ -236,7 +253,32 @@
     color: inherit;
     pointer-events: none;
   }
+
+  .template-index .site-header:not(.site-header--scrolled) .site-header__utilities shopify-account {
+    --shopify-account-avatar-size: var(--header-icon-size);
+    --shopify-account-signed-in-avatar-size: var(--header-icon-size);
+  }
 {% endstyle %}
+
+<script>
+  (function () {
+    var header = document.querySelector('[data-site-header]');
+    if (!header) return;
+
+    function syncHeaderHeight() {
+      var height = header.offsetHeight + 'px';
+      document.documentElement.style.setProperty('--header-height', height);
+      document.documentElement.style.setProperty('--header-height-scrolled', height);
+    }
+
+    syncHeaderHeight();
+    window.addEventListener('resize', syncHeaderHeight, { passive: true });
+
+    if (typeof ResizeObserver !== 'undefined') {
+      new ResizeObserver(syncHeaderHeight).observe(header);
+    }
+  })();
+</script>
 
 {% unless request.design_mode %}
   <script type="module">
@@ -250,18 +292,27 @@
     var header = document.querySelector('[data-site-header]');
     if (!header || !header.hasAttribute('data-site-header-scroll')) return;
 
+    var headerSection = header.closest('.header-section');
+    if (!headerSection) return;
+
     function onScroll() {
-      header.classList.toggle('site-header--scrolled', window.scrollY > 20);
+      // Shrink only after the sticky header section has pinned to the viewport top
+      // (not on the first pixels of scroll while it still moves with the page).
+      var isPinned =
+        window.scrollY > 0 && headerSection.getBoundingClientRect().top <= 0.5;
+      header.classList.toggle('site-header--scrolled', isPinned);
     }
 
     onScroll();
     window.addEventListener('scroll', onScroll, { passive: true });
+    window.addEventListener('resize', onScroll, { passive: true });
   })();
 {% endjavascript %}
 
 {% schema %}
 {
   "name": "t:general.header",
+  "class": "header-section",
   "settings": [
     {
       "type": "link_list",

@@ -50,7 +50,7 @@
     {% endif %}
   </head>
 
-  <body>
+  <body class="template-{{ template.name | handle }}">
     {% render 'skip-to-main' %}
 
     {% sections 'header-group' %}

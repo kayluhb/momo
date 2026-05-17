@@ -4,12 +4,10 @@
   When `width`, `height` and `crop` are provided, the image will be rendered
   with a fixed aspect ratio.
 
-  Serves as an example of how to use the `image_url` filter and `image_tag` filter
-  as well as how you can use LiquidDoc to document your code.
-
   @param {image} image - The image to be rendered
   @param {string} [url] - An optional destination URL for the image
   @param {string} [class] - Optional class to be added to the image wrapper
+  @param {string} [alt] - Alt text; falls back to image.alt when omitted
   @param {number} [width] - The highest resolution width of the image to be rendered
   @param {number} [height] - The highest resolution height of the image to be rendered
   @param {string} [crop] - The crop position of the image
@@ -24,6 +22,7 @@
     width: 1200,
     height: 800,
     crop: 'center',
+    alt: product.title,
   %}
 {% enddoc %}
 
@@ -31,6 +30,8 @@
   unless height
     assign width = width | default: image.width
   endunless
+
+  assign image_alt = alt | default: image.alt | default: ''
 
   if url
     assign wrapper = 'a'
@@ -45,7 +46,7 @@
     href="{{ url }}"
   {% endif %}
 >
-  {{ image | image_url: width: width, height: height, crop: crop | image_tag }}
+  {{ image | image_url: width: width, height: height, crop: crop | image_tag: alt: image_alt }}
 </{{ wrapper }}>
 
 {% stylesheet %}

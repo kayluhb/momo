@@ -21,7 +21,8 @@
         {% for item in cart.items %}
           <tr class="cart-items__row">
             <td class="cart-items__product">
-              {% render 'image', image: item.image, url: item.url %}
+              {% assign line_image_alt = item.image.alt | default: item.product.title %}
+              {% render 'image', image: item.image, url: item.url, alt: line_image_alt %}
               <div>
                 <p>
                   <a href="{{ item.url }}">{{ item.product.title | escape }}</a>

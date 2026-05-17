@@ -25,8 +25,12 @@
 
             if card_image.alt != blank
               assign card_alt = card_image.alt
+            elsif line_one != blank and line_two != blank
+              assign card_alt = line_one | append: ', ' | append: line_two
             elsif line_one != blank
               assign card_alt = line_one
+            elsif line_two != blank
+              assign card_alt = line_two
             else
               assign card_alt = ''
             endif

@@ -26,6 +26,11 @@
     "header": {
       "main_navigation": "Main navigation"
     },
+    "announcement_bar": {
+      "region_label": "Store announcements",
+      "previous": "Previous announcement",
+      "next": "Next announcement"
+    },
     "footer": {
       "about_heading": "About Us",
       "customer_care_heading": "Customer care",
@@ -90,6 +95,8 @@
     "total": "Total",
     "subtotal": "Subtotal",
     "drawer_title": "Cart",
+    "drawer_title_one": "Cart, 1 item",
+    "drawer_title_with_count": "Cart, {{ count }} items",
     "drawer_close": "Close",
     "view_cart": "View cart"
   },
@@ -122,6 +129,7 @@
   },
   "search": {
     "title": "Search",
+    "label": "Search",
     "placeholder": "Search articles, pages, or products",
     "submit": "Search",
     "no_results_html": "No results found for {{ terms }}",

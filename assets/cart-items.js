@@ -112,7 +112,10 @@ class CartItemsComponent extends HTMLElement {
   async #morphFromResponse(sections) {
     if (!sections) return;
 
-    const updates = Object.entries(sections).map(([sectionId, html]) => morphSection(sectionId, html));
+    const updates = Object.entries(sections)
+      .filter((entry) => entry[1])
+      .map(([sectionId, html]) => morphSection(sectionId, /** @type {string} */ (html)));
+
     await Promise.all(updates);
   }
 

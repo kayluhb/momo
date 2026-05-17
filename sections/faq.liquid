@@ -32,6 +32,7 @@
                   style="--faq-avatar-bg: {{ avatar_fallbacks[avatar_index] }}; z-index: {{ 5 | minus: forloop.index }};"
                 >
                   {% if avatar_image != blank %}
+                    {% assign avatar_alt = 'sections.faq.support_avatars_label' | t %}
                     {{
                       avatar_image
                       | image_url: width: 96
@@ -39,7 +40,7 @@
                         loading: 'lazy',
                         widths: '48,96',
                         class: 'faq__avatar-img',
-                        alt: ''
+                        alt: avatar_alt
                     }}
                   {% else %}
                     <span class="faq__avatar-fallback" aria-hidden="true"></span>
@@ -152,11 +153,11 @@
     max-width: 22rem;
     font-size: 0.9375rem;
     line-height: 1.65;
-    color: color-mix(in srgb, var(--color-brand-steel, #00253f) 65%, transparent);
+    color: color-mix(in srgb, var(--color-brand-steel, #00253f) 75%, transparent);
   }
 
   :where(.bg-brand-earth, .bg-brand-steel, .bg-brand-warmth, .bg-brand-heart) .faq__subheading {
-    color: rgb(255 255 255 / 0.78);
+    color: rgb(255 255 255 / 0.92);
   }
 
   .faq__subheading :where(p) {
@@ -165,7 +166,7 @@
 
   .faq__subheading :where(a) {
     font-weight: var(--font-weight-bold, 700);
-    color: var(--color-brand-rust, #c57639);
+    color: var(--color-brand-rust);
     text-decoration: underline;
     text-underline-offset: 0.15em;
   }

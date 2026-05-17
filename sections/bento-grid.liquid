@@ -23,22 +23,39 @@
       {% for block in section.blocks %}
       {% liquid
         assign tile_url = block.settings.link
-        if tile_url == blank
-          assign tile_url = '#'
+        assign tile_is_link = false
+        if tile_url != blank
+          assign tile_is_link = true
         endif
 
         assign tile_overlay = block.settings.overlay_opacity
         if tile_overlay == blank
           assign tile_overlay = 25
         endif
+
+        assign tile_classes = 'bento-grid__tile bento-grid__tile--' | append: block.settings.layout
+        if block.settings.eyebrow != blank and block.settings.layout == 'featured'
+          assign tile_classes = tile_classes | append: ' bento-grid__tile--has-eyebrow'
+        endif
+        unless tile_is_link
+          assign tile_classes = tile_classes | append: ' bento-grid__tile--static'
+        endunless
       %}
 
-      <a
-        href="{{ tile_url }}"
-        class="bento-grid__tile bento-grid__tile--{{ block.settings.layout }}{% if block.settings.eyebrow != blank and block.settings.layout == 'featured' %} bento-grid__tile--has-eyebrow{% endif %}"
-        role="listitem"
-        {{ block.shopify_attributes }}
-      >
+      {% if tile_is_link %}
+        <a
+          href="{{ tile_url }}"
+          class="{{ tile_classes }}"
+          role="listitem"
+          {{ block.shopify_attributes }}
+        >
+      {% else %}
+        <div
+          class="{{ tile_classes }}"
+          role="listitem"
+          {{ block.shopify_attributes }}
+        >
+      {% endif %}
         <div class="bento-grid__media">
           {% if block.settings.image != blank %}
             {{
@@ -73,7 +90,11 @@
             <p class="bento-grid__title">{{ block.settings.title | escape }}</p>
           {% endif %}
         </div>
-      </a>
+      {% if tile_is_link %}
+        </a>
+      {% else %}
+        </div>
+      {% endif %}
     {% endfor %}
     </div>
   </div>
@@ -115,6 +136,10 @@
   .bento-grid__tile:focus-visible {
     outline: 2px solid currentColor;
     outline-offset: 3px;
+  }
+
+  .bento-grid__tile--static {
+    cursor: default;
   }
 
   @media (min-width: 750px) {

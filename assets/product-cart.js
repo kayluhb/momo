@@ -1,7 +1,7 @@
-import { morphSection } from '@theme/section-renderer';
+import { morphSection, sectionRenderer } from '@theme/section-renderer';
 import { fetchConfig, onDocumentReady } from '@theme/utilities';
 import { CartAddEvent, CartErrorEvent } from '@theme/events';
-import { getCartSectionsParam } from '@theme/cart-sections';
+import { getCartDrawerSectionId, getCartSectionsParam } from '@theme/cart-sections';
 
 /**
  * @param {HTMLFormElement} form
@@ -39,12 +39,33 @@ function clearFormMessage(form) {
 }
 
 /**
- * @param {Record<string, string> | undefined} sections
+ * @param {Record<string, string | null> | undefined} sections
  */
 async function morphCartSections(sections) {
   if (!sections) return;
 
-  await Promise.all(Object.entries(sections).map(([sectionId, html]) => morphSection(sectionId, html)));
+  const updates = Object.entries(sections)
+    .filter((entry) => entry[1])
+    .map(([sectionId, html]) => morphSection(sectionId, /** @type {string} */ (html)));
+
+  await Promise.all(updates);
+}
+
+/**
+ * @param {Record<string, unknown>} data
+ */
+async function refreshCartDrawerIfNeeded(data) {
+  const drawer = document.querySelector('cart-drawer-component');
+  if (!drawer?.querySelector('.cart-empty')) return;
+
+  const itemCount = Number(data.item_count);
+  const hasItems = itemCount > 0 || (Array.isArray(data.items) && data.items.length > 0);
+  if (!hasItems) return;
+
+  const sectionId = getCartDrawerSectionId();
+  if (!sectionId) return;
+
+  await sectionRenderer.renderSection(sectionId, { cache: false });
 }
 
 /**
@@ -116,6 +137,7 @@ async function handleProductFormSubmit(form) {
     }
 
     await morphCartSections(data.sections);
+    await refreshCartDrawerIfNeeded(data);
 
     showFormMessage(form, Theme.translations.add_to_cart_success);
 

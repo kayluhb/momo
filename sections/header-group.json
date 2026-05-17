@@ -11,6 +11,34 @@
   "type": "header",
   "name": "t:general.header",
   "sections": {
+    "announcement_bar": {
+      "type": "announcement-bar",
+      "blocks": {
+        "announcement_1": {
+          "type": "announcement",
+          "settings": {
+            "text": "Free shipping on orders over $100",
+            "link": "shopify://collections/all"
+          }
+        },
+        "announcement_2": {
+          "type": "announcement",
+          "settings": {
+            "text": "New design drops — explore the collection",
+            "link": "shopify://collections/all"
+          }
+        }
+      },
+      "block_order": [
+        "announcement_1",
+        "announcement_2"
+      ],
+      "settings": {
+        "color_scheme": "steel",
+        "autoplay_interval": 5,
+        "show_arrows": false
+      }
+    },
     "header": {
       "type": "header",
       "settings": {
@@ -21,6 +49,7 @@
     }
   },
   "order": [
+    "announcement_bar",
     "header"
   ]
 }

@@ -143,6 +143,20 @@
       "link_label": "Link label",
       "link_url_label": "Link"
     },
+    "announcement_bar": {
+      "name": "Announcement bar",
+      "autoplay_interval_label": "Time between announcements",
+      "show_arrows_label": "Show previous and next arrows on desktop",
+      "presets": {
+        "default_name": "Announcement bar"
+      },
+      "blocks": {
+        "announcement": {
+          "name": "Announcement",
+          "text_label": "Text"
+        }
+      }
+    },
     "featured_collection": {
       "name": "Featured collection",
       "collection_header": "Collection",

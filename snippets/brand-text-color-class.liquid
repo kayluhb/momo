@@ -8,6 +8,8 @@
 {% enddoc %}
 {% liquid
   case color
+    when 'white'
+      echo 'text-white'
     when 'steel'
       echo 'text-brand-steel'
     when 'rust'
@@ -19,6 +21,6 @@
     when 'heart'
       echo 'text-brand-heart'
     else
-      echo 'text-white'
+      echo 'text-brand-steel'
   endcase
 %}

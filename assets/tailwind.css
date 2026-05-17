@@ -212,6 +212,9 @@
   .static {
     position: static;
   }
+  .sticky {
+    position: sticky;
+  }
   .left-full {
     left: 100%;
   }
@@ -288,9 +291,6 @@
   .w-full {
     width: 100%;
   }
-  .max-w-\[min\(12rem\,40vw\)\] {
-    max-width: min(12rem, 40vw);
-  }
   .max-w-\[var\(--page-margin\)\] {
     max-width: var(--page-margin);
   }
@@ -320,6 +320,9 @@
   }
   .grid-cols-1 {
     grid-template-columns: repeat(1, minmax(0, 1fr));
+  }
+  .flex-nowrap {
+    flex-wrap: nowrap;
   }
   .flex-wrap {
     flex-wrap: wrap;
@@ -409,9 +412,6 @@
   }
   .text-brand-heart {
     color: var(--color-brand-heart);
-  }
-  .text-brand-primary {
-    color: var(--color-brand-primary);
   }
   .text-brand-rust {
     color: var(--color-brand-rust);

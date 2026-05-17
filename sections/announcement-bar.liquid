@@ -1,0 +1,392 @@
+{% liquid
+  assign announcement_blocks = section.blocks | where: 'type', 'announcement'
+  assign announcement_count = 0
+  for block in announcement_blocks
+    if block.settings.text != blank
+      assign announcement_count = announcement_count | plus: 1
+    endif
+  endfor
+
+  assign rotate_announcements = false
+  if announcement_count > 1
+    assign rotate_announcements = true
+  endif
+%}
+{% capture section_bg %}{% render 'section-color-scheme', scheme: section.settings.color_scheme %}{% endcapture %}
+
+{% if announcement_count > 0 %}
+  <section
+    class="announcement-bar full-width {{ section_bg }}"
+    data-announcement-bar
+    data-rotate="{% if rotate_announcements %}1{% else %}0{% endif %}"
+    data-interval="{{ section.settings.autoplay_interval }}"
+    role="region"
+    aria-label="{{ 'sections.announcement_bar.region_label' | t }}"
+  >
+    <div class="section-inner announcement-bar__inner">
+      {% if rotate_announcements and section.settings.show_arrows %}
+        <button
+          type="button"
+          class="announcement-bar__arrow announcement-bar__arrow--prev"
+          data-announcement-prev
+          aria-label="{{ 'sections.announcement_bar.previous' | t }}"
+        >
+          <span aria-hidden="true">&lsaquo;</span>
+        </button>
+      {% endif %}
+
+      <div
+        class="announcement-bar__rotator{% unless rotate_announcements %} announcement-bar__rotator--static{% endunless %}"
+        {% if rotate_announcements %}
+          aria-live="polite"
+          aria-atomic="true"
+        {% endif %}
+      >
+        {% assign slide_index = 0 %}
+        {% for block in announcement_blocks %}
+          {% if block.settings.text != blank %}
+            <div
+              class="announcement-bar__slide{% if slide_index == 0 %} is-active{% endif %}"
+              data-announcement-slide
+              {{ block.shopify_attributes }}
+            >
+              {% if block.settings.link != blank %}
+                <a class="announcement-bar__message" href="{{ block.settings.link }}">
+                  {{ block.settings.text | escape }}
+                </a>
+              {% else %}
+                <p class="announcement-bar__message">{{ block.settings.text | escape }}</p>
+              {% endif %}
+            </div>
+            {% assign slide_index = slide_index | plus: 1 %}
+          {% endif %}
+        {% endfor %}
+      </div>
+
+      {% if rotate_announcements and section.settings.show_arrows %}
+        <button
+          type="button"
+          class="announcement-bar__arrow announcement-bar__arrow--next"
+          data-announcement-next
+          aria-label="{{ 'sections.announcement_bar.next' | t }}"
+        >
+          <span aria-hidden="true">&rsaquo;</span>
+        </button>
+      {% endif %}
+    </div>
+  </section>
+  <script>
+    (function () {
+      var bar = document.getElementById('shopify-section-{{ section.id }}')?.querySelector('.announcement-bar');
+      if (bar) {
+        document.documentElement.style.setProperty('--announcement-bar-height', bar.offsetHeight + 'px');
+      }
+    })();
+  </script>
+{% endif %}
+
+{% stylesheet %}
+  .announcement-bar {
+    width: 100%;
+  }
+
+  .announcement-bar__inner {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.75rem;
+    min-height: 2.25rem;
+    padding-block: 0.4375rem;
+  }
+
+  .announcement-bar__rotator {
+    display: grid;
+    flex: 1 1 auto;
+    min-width: 0;
+    place-items: center;
+  }
+
+  .announcement-bar__slide {
+    grid-area: 1 / 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    transition: opacity 0.35s ease, visibility 0.35s ease;
+  }
+
+  .announcement-bar__slide.is-active {
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+  }
+
+  .announcement-bar__rotator--static .announcement-bar__slide {
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+  }
+
+  .announcement-bar__message {
+    margin: 0;
+    padding: 0;
+    max-width: 100%;
+    font-size: 0.8125rem;
+    font-weight: var(--font-weight-bold, 700);
+    letter-spacing: 0.04em;
+    line-height: 1.35;
+    text-align: center;
+    text-decoration: none;
+    text-transform: uppercase;
+  }
+
+  a.announcement-bar__message {
+    color: inherit;
+    transition: opacity 0.2s ease;
+  }
+
+  a.announcement-bar__message:hover {
+    opacity: 0.8;
+  }
+
+  .announcement-bar__arrow {
+    display: none;
+    flex-shrink: 0;
+    align-items: center;
+    justify-content: center;
+    width: 1.75rem;
+    height: 1.75rem;
+    padding: 0;
+    border: none;
+    border-radius: 50%;
+    background: rgb(255 255 255 / 12%);
+    color: inherit;
+    cursor: pointer;
+    font-size: 1.125rem;
+    line-height: 1;
+    transition: background-color 0.2s ease, opacity 0.2s ease;
+  }
+
+  @media (min-width: 750px) {
+    .announcement-bar__arrow {
+      display: inline-flex;
+    }
+  }
+
+  .announcement-bar__arrow:hover {
+    background: rgb(255 255 255 / 20%);
+  }
+
+  .announcement-bar__arrow:focus-visible {
+    outline: 2px solid currentColor;
+    outline-offset: 2px;
+  }
+
+  :where(.bg-white, .bg-brand-canvas) .announcement-bar__arrow {
+    background: color-mix(in srgb, currentColor 10%, transparent);
+  }
+
+  :where(.bg-white, .bg-brand-canvas) .announcement-bar__arrow:hover {
+    background: color-mix(in srgb, currentColor 16%, transparent);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .announcement-bar__slide {
+      transition: none;
+    }
+  }
+{% endstylesheet %}
+
+{% javascript %}
+  (function () {
+    var bar = document.querySelector('.announcement-bar');
+
+    function updateAnnouncementBarHeight() {
+      if (!bar) {
+        document.documentElement.style.setProperty('--announcement-bar-height', '0px');
+        return;
+      }
+
+      document.documentElement.style.setProperty('--announcement-bar-height', bar.offsetHeight + 'px');
+    }
+
+    updateAnnouncementBarHeight();
+    window.addEventListener('resize', updateAnnouncementBarHeight, { passive: true });
+    window.addEventListener('shopify:section:load', updateAnnouncementBarHeight);
+    window.addEventListener('shopify:section:unload', updateAnnouncementBarHeight);
+
+    var bars = document.querySelectorAll('[data-announcement-bar]');
+    var reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (!bars.length) return;
+
+    bars.forEach(function (root) {
+      if (root.dataset.rotate !== '1' || reduceMotion) return;
+
+      var slides = root.querySelectorAll('[data-announcement-slide]');
+      if (slides.length < 2) return;
+
+      var intervalSeconds = parseInt(root.dataset.interval, 10);
+      if (Number.isNaN(intervalSeconds) || intervalSeconds < 1) {
+        intervalSeconds = 5;
+      }
+
+      var intervalMs = intervalSeconds * 1000;
+      var current = 0;
+      var timer = null;
+      var paused = false;
+
+      function show(index) {
+        slides[current].classList.remove('is-active');
+        current = (index + slides.length) % slides.length;
+        slides[current].classList.add('is-active');
+        updateAnnouncementBarHeight();
+      }
+
+      function next() {
+        show(current + 1);
+      }
+
+      function prev() {
+        show(current - 1);
+      }
+
+      function stop() {
+        if (timer) {
+          clearInterval(timer);
+          timer = null;
+        }
+      }
+
+      function start() {
+        stop();
+        if (!paused) {
+          timer = setInterval(next, intervalMs);
+        }
+      }
+
+      root.addEventListener('focusin', function () {
+        paused = true;
+        stop();
+      });
+
+      root.addEventListener('focusout', function () {
+        if (!root.contains(document.activeElement)) {
+          paused = false;
+          start();
+        }
+      });
+
+      var prevButton = root.querySelector('[data-announcement-prev]');
+      var nextButton = root.querySelector('[data-announcement-next]');
+
+      if (prevButton) {
+        prevButton.addEventListener('click', function () {
+          prev();
+          start();
+        });
+      }
+
+      if (nextButton) {
+        nextButton.addEventListener('click', function () {
+          next();
+          start();
+        });
+      }
+
+      start();
+    });
+  })();
+{% endjavascript %}
+
+{% schema %}
+{
+  "name": "t:sections.announcement_bar.name",
+  "tag": "section",
+  "class": "announcement-bar-section",
+  "max_blocks": 6,
+  "settings": [
+    {
+      "type": "header",
+      "content": "t:sections.shared.appearance_header"
+    },
+    {
+      "type": "select",
+      "id": "color_scheme",
+      "label": "t:sections.shared.color_scheme_label",
+      "default": "steel",
+      "options": [
+        { "value": "white", "label": "t:options.color_scheme.white" },
+        { "value": "canvas", "label": "t:options.color_scheme.canvas" },
+        { "value": "earth", "label": "t:options.color_scheme.earth" },
+        { "value": "steel", "label": "t:options.color_scheme.steel" },
+        { "value": "warmth", "label": "t:options.color_scheme.warmth" },
+        { "value": "heart", "label": "t:options.color_scheme.heart" }
+      ]
+    },
+    {
+      "type": "range",
+      "id": "autoplay_interval",
+      "label": "t:sections.announcement_bar.autoplay_interval_label",
+      "min": 3,
+      "max": 10,
+      "step": 1,
+      "unit": "s",
+      "default": 5
+    },
+    {
+      "type": "checkbox",
+      "id": "show_arrows",
+      "label": "t:sections.announcement_bar.show_arrows_label",
+      "default": false
+    }
+  ],
+  "blocks": [
+    {
+      "type": "announcement",
+      "name": "t:sections.announcement_bar.blocks.announcement.name",
+      "settings": [
+        {
+          "type": "text",
+          "id": "text",
+          "label": "t:sections.announcement_bar.blocks.announcement.text_label",
+          "default": "Announcement"
+        },
+        {
+          "type": "url",
+          "id": "link",
+          "label": "t:sections.shared.link_url_label"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "t:sections.announcement_bar.presets.default_name",
+      "settings": {
+        "color_scheme": "steel",
+        "autoplay_interval": 5,
+        "show_arrows": false
+      },
+      "blocks": [
+        {
+          "type": "announcement",
+          "settings": {
+            "text": "Free shipping on orders over $100",
+            "link": "shopify://collections/all"
+          }
+        },
+        {
+          "type": "announcement",
+          "settings": {
+            "text": "New design drops — explore the collection",
+            "link": "shopify://collections/all"
+          }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

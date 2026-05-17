@@ -10,7 +10,8 @@
 >
   <div class="product-images">
     {% for image in product.images %}
-      {% render 'image', class: 'product-image', image: image %}
+      {% assign image_alt = image.alt | default: product.title %}
+      {% render 'image', class: 'product-image', image: image, alt: image_alt %}
     {% endfor %}
   </div>
 

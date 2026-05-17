@@ -64,10 +64,16 @@ class CartDrawerComponent extends DialogComponent {
     }
   };
 
-  #handleCartAdd = () => {
-    if (this.hasAttribute('auto-open')) {
+  /**
+   * @param {CartAddEvent} event
+   */
+  #handleCartAdd = (event) => {
+    if (event.detail?.data?.didError) return;
+    if (!this.hasAttribute('auto-open')) return;
+
+    requestAnimationFrame(() => {
       this.showDialog();
-    }
+    });
   };
 
   open() {
