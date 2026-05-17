@@ -14,7 +14,14 @@
     "footer": {
       "type": "footer",
       "settings": {
-        "show_brand_wordmark": true
+        "about_text": "<p>Momo is a celebration of where we come from and how we live today—thoughtfully designed, rich in history, and always best enjoyed together.</p>",
+        "instagram_url": "",
+        "tiktok_url": "",
+        "customer_care_menu": "customer-service",
+        "resources_menu": "service-menu",
+        "newsletter_text": "Join the Momo community to receive early access to new design drops, stories of heritage, and exclusive offerings crafted for your home and hearth.",
+        "show_brand_wordmark": true,
+        "legal_menu": "policy-menu"
       }
     }
   },
