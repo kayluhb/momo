@@ -42,7 +42,9 @@
       "view_media": "View image {{ index }}",
       "zoom": "Zoom in on image",
       "scroll_up": "Scroll thumbnails up",
-      "scroll_down": "Scroll thumbnails down"
+      "scroll_down": "Scroll thumbnails down",
+      "pagination": "Product gallery",
+      "go_to_slide": "Go to slide {{ index }} of {{ count }}"
     },
     "swatch_colors": {
       "black": "#1a1a1a",

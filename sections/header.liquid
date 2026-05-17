@@ -108,11 +108,11 @@
           </h2>
           <button
             type="button"
-            class="menu-drawer__close"
+            class="dialog-drawer__close menu-drawer__close"
             on:click="menu-drawer-component/close"
             aria-label="{{ 'sections.header.menu_close' | t }}"
           >
-            {{ 'sections.header.menu_close' | t }}
+            <span class="dialog-drawer__close-icon" aria-hidden="true">{{ 'icon-close.svg' | inline_asset_content }}</span>
           </button>
         </header>
 
@@ -390,7 +390,7 @@
 
     position: fixed;
     inset: 0 auto 0 0;
-    width: min(20rem, 100vw);
+    width: var(--drawer-width);
     max-width: 100%;
     height: 100%;
     max-height: 100dvh;
@@ -492,16 +492,6 @@
     text-transform: uppercase;
   }
 
-  .menu-drawer__close {
-    border: none;
-    background: transparent;
-    color: inherit;
-    cursor: pointer;
-    font: inherit;
-    text-decoration: underline;
-  }
-
-  .menu-drawer__close:focus-visible,
   .menu-drawer__link:focus-visible {
     outline: 2px solid var(--color-brand-rust);
     outline-offset: 2px;

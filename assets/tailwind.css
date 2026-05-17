@@ -390,6 +390,9 @@
     --tw-leading: var(--leading-relaxed);
     line-height: var(--leading-relaxed);
   }
+  .text-wrap {
+    text-wrap: wrap;
+  }
   .text-brand-earth {
     color: var(--color-brand-earth);
   }

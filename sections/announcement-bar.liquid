@@ -99,6 +99,13 @@
     padding-block: 0.4375rem;
   }
 
+  @media (max-width: 749px) {
+    .announcement-bar .section-inner {
+      max-width: calc(100% - var(--page-margin-mobile) * 2);
+      padding-inline: var(--page-margin-mobile);
+    }
+  }
+
   .announcement-bar__rotator {
     display: grid;
     flex: 1 1 auto;

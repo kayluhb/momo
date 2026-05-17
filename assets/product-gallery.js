@@ -12,6 +12,9 @@ const GALLERY_SELECTORS = {
   thumbsScroller: '[data-gallery-thumbs]',
   thumbsUp: '[data-gallery-thumbs-up]',
   thumbsDown: '[data-gallery-thumbs-down]',
+  mobileTrack: '[data-gallery-mobile-track]',
+  galleryDots: '[data-gallery-dots]',
+  galleryDot: '[data-gallery-dot]',
 };
 
 class ProductGallery extends HTMLElement {
@@ -19,13 +22,18 @@ class ProductGallery extends HTMLElement {
   #lightbox = null;
   /** @type {ResizeObserver | null} */
   #thumbsResizeObserver = null;
+  /** @type {AbortController | null} */
+  #mobileCarouselAbort = null;
 
   connectedCallback() {
     this.addEventListener('click', this.#onClick);
     this.#initLightbox();
     this.#initThumbsScroll();
 
-    if (this.dataset.layout === 'split_half') return;
+    if (this.dataset.layout === 'split_half') {
+      this.#initSplitHalfMobileCarousel();
+      return;
+    }
 
     const initialMediaId = this.dataset.initialMediaId;
     if (initialMediaId) {
@@ -44,6 +52,8 @@ class ProductGallery extends HTMLElement {
     this.#destroyLightbox();
     this.#thumbsResizeObserver?.disconnect();
     this.#thumbsResizeObserver = null;
+    this.#mobileCarouselAbort?.abort();
+    this.#mobileCarouselAbort = null;
   }
 
   /** @param {MouseEvent} event */
@@ -66,6 +76,13 @@ class ProductGallery extends HTMLElement {
     if (target.closest(GALLERY_SELECTORS.thumbsDown)) {
       event.preventDefault();
       this.#scrollThumbs(1);
+      return;
+    }
+
+    const dot = target.closest(GALLERY_SELECTORS.galleryDot);
+    if (dot instanceof HTMLButtonElement) {
+      event.preventDefault();
+      this.#scrollToMobileSlide(Number.parseInt(dot.dataset.slideIndex ?? '0', 10));
       return;
     }
 
@@ -153,6 +170,79 @@ class ProductGallery extends HTMLElement {
 
     this.#updateZoomButton(mediaId);
     this.#scrollActiveThumbIntoView();
+  }
+
+  #initSplitHalfMobileCarousel() {
+    this.#mobileCarouselAbort?.abort();
+
+    const track = this.querySelector(GALLERY_SELECTORS.mobileTrack);
+    if (!(track instanceof HTMLElement)) return;
+
+    const slides = track.querySelectorAll(GALLERY_SELECTORS.mediaPanel);
+    const dotsRoot = this.querySelector(GALLERY_SELECTORS.galleryDots);
+
+    if (slides.length <= 1) {
+      if (dotsRoot instanceof HTMLElement) dotsRoot.hidden = true;
+      return;
+    }
+
+    const dots = dotsRoot
+      ? Array.from(dotsRoot.querySelectorAll(GALLERY_SELECTORS.galleryDot))
+      : [];
+
+    const controller = new AbortController();
+    this.#mobileCarouselAbort = controller;
+    const { signal } = controller;
+
+    /** @param {number} index */
+    const setActiveIndex = (index) => {
+      const clamped = Math.max(0, Math.min(index, slides.length - 1));
+
+      dots.forEach((dot, dotIndex) => {
+        const active = dotIndex === clamped;
+        dot.classList.toggle('is-active', active);
+        dot.setAttribute('aria-selected', active ? 'true' : 'false');
+      });
+    };
+
+    const getActiveIndex = () => {
+      const slideWidth = track.clientWidth;
+      if (!slideWidth) return 0;
+      return Math.round(track.scrollLeft / slideWidth);
+    };
+
+    let ticking = false;
+    const onScroll = () => {
+      if (ticking) return;
+      ticking = true;
+      requestAnimationFrame(() => {
+        ticking = false;
+        setActiveIndex(getActiveIndex());
+      });
+    };
+
+    track.addEventListener('scroll', onScroll, { passive: true, signal });
+    track.addEventListener('scrollend', onScroll, { signal });
+
+    const resizeObserver = new ResizeObserver(onScroll);
+    resizeObserver.observe(track);
+    signal.addEventListener('abort', () => resizeObserver.disconnect());
+
+    setActiveIndex(0);
+  }
+
+  /** @param {number} index */
+  #scrollToMobileSlide(index) {
+    const track = this.querySelector(GALLERY_SELECTORS.mobileTrack);
+    if (!(track instanceof HTMLElement)) return;
+
+    const slideWidth = track.clientWidth;
+    if (!slideWidth) return;
+
+    track.scrollTo({
+      left: index * slideWidth,
+      behavior: 'smooth',
+    });
   }
 
   #initThumbsScroll() {
