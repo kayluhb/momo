@@ -1,0 +1,14 @@
+{% doc %}
+  Loads Storefront Web Components required by shopify-account.
+
+  @example
+  {% render 'storefront-components' %}
+{% enddoc %}
+
+{% if shop.customer_accounts_enabled %}
+  <script
+    src="https://cdn.shopify.com/storefront/web-components.js"
+    type="module"
+    fetchpriority="low"
+  ></script>
+{% endif %}
