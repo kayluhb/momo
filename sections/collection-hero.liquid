@@ -30,9 +30,10 @@
 
 <div
   id="CollectionHero-{{ section.id }}"
-  class="collection-hero hero hero--parallax full-width"
+  class="collection-hero collection-hero--parallax full-width"
   data-hero-parallax
   data-collection-hero
+  style="height: {{ section.settings.hero_height }}rem; min-height: 0;"
   {{ section.shopify_attributes }}
 >
   <div class="collection-hero__media hero__media">
@@ -75,13 +76,13 @@
 {% style %}
   #CollectionHero-{{ section.id }} {
     height: {{ section.settings.hero_height }}rem;
+    min-height: 0;
   }
 {% endstyle %}
 
 {% stylesheet %}
   .collection-hero {
     position: relative;
-    height: 18rem;
     overflow: hidden;
   }
 
@@ -121,7 +122,7 @@
     object-position: center;
   }
 
-  .collection-hero.hero--parallax .hero__img--parallax {
+  .collection-hero--parallax .hero__img--parallax {
     position: absolute;
     top: 50%;
     left: 0;
@@ -177,7 +178,7 @@
   }
 
   @media (prefers-reduced-motion: reduce) {
-    .collection-hero.hero--parallax .hero__img--parallax {
+    .collection-hero--parallax .hero__img--parallax {
       position: relative;
       top: auto;
       left: auto;
@@ -218,8 +219,8 @@
     {
       "type": "range",
       "id": "hero_height",
-      "min": 14,
-      "max": 28,
+      "min": 12,
+      "max": 48,
       "step": 2,
       "unit": "rem",
       "label": "t:sections.collection_hero.settings.hero_height_label",

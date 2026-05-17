@@ -22,7 +22,12 @@
 
     function updateHeroParallax() {
       getParallaxRoots().forEach(function (root) {
-        if (!root.classList.contains('hero--parallax')) return;
+        if (
+          !root.classList.contains('hero--parallax') &&
+          !root.classList.contains('collection-hero--parallax')
+        ) {
+          return;
+        }
         var height = root.offsetHeight;
         if (!height) return;
 
