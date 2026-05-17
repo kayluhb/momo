@@ -421,6 +421,13 @@ div.pswp__img--placeholder,
 
 .pswp {
   --pswp-bg: rgb(0 0 0 / 75%);
+  --pswp-arrow-size: 2.75rem;
+  --pswp-arrow-bg: #d4d4d4;
+  --pswp-arrow-border: #121212;
+  --pswp-arrow-ring: #fff;
+  --pswp-arrow-ring-width: 3px;
+  --pswp-arrow-icon: #121212;
+  --pswp-arrow-inset: clamp(0.75rem, 2vw, 1.25rem);
 }
 
 .pswp--click-to-zoom.pswp--zoom-allowed .pswp__img {
@@ -433,4 +440,76 @@ div.pswp__img--placeholder,
 
 .pswp--click-to-zoom.pswp--zoomed-in .pswp__img:active {
   cursor: grabbing;
+}
+
+/*
+  Prev/next arrows — circular control with gray fill, black stroke, white ring
+*/
+
+.pswp--touch .pswp__button--arrow {
+  visibility: visible;
+}
+
+.pswp__button--arrow {
+  top: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: var(--pswp-arrow-size);
+  height: var(--pswp-arrow-size);
+  margin-top: calc(var(--pswp-arrow-size) / -2);
+  opacity: 1;
+  background: var(--pswp-arrow-bg);
+  border: 1px solid var(--pswp-arrow-border);
+  border-radius: 50%;
+  box-shadow: 0 0 0 var(--pswp-arrow-ring-width) var(--pswp-arrow-ring);
+  transition: transform 200ms ease, background-color 200ms ease;
+}
+
+.pswp__button--arrow:hover,
+.pswp__button--arrow:focus-visible {
+  opacity: 1;
+  background: #e0e0e0;
+  transform: scale(1.04);
+}
+
+.pswp__button--arrow:focus-visible {
+  outline: 2px solid var(--pswp-arrow-ring);
+  outline-offset: 3px;
+}
+
+.pswp__button--arrow .pswp__icn,
+.pswp__button--arrow .pswp__icn-shadow {
+  display: none;
+}
+
+.pswp__button--arrow::after {
+  content: '';
+  display: block;
+  width: 0.5rem;
+  height: 0.5rem;
+  border-right: 2px solid var(--pswp-arrow-icon);
+  border-bottom: 2px solid var(--pswp-arrow-icon);
+  transform: rotate(-45deg);
+}
+
+.pswp__button--arrow--prev {
+  left: var(--pswp-arrow-inset);
+}
+
+.pswp__button--arrow--prev::after {
+  margin-inline-start: 0.125rem;
+  transform: rotate(135deg);
+}
+
+.pswp__button--arrow--next {
+  right: var(--pswp-arrow-inset);
+}
+
+.pswp__button--arrow--next::after {
+  margin-inline-end: 0.125rem;
+}
+
+.pswp__button--arrow--next .pswp__icn {
+  transform: none;
 }
