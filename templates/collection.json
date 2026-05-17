@@ -14,7 +14,7 @@
       "settings": {
         "image": "shopify://shop_images/coffee-beans-from-above.jpg",
         "overlay_opacity": 25,
-        "hero_height": 14,
+        "hero_height": 24,
         "heading": "",
         "description": ""
       }
