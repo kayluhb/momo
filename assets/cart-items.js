@@ -1,4 +1,12 @@
-import { cartDebug, cartDebugError, debounce, fetchConfig, getCartDomSnapshot } from '@theme/utilities';
+import {
+  cartDebug,
+  cartDebugError,
+  cartDebugWarn,
+  debounce,
+  fetchConfig,
+  getCartDomSnapshot,
+  isShopifyCartJsonResponse,
+} from '@theme/utilities';
 import { ThemeEvents, CartUpdateEvent, CartAddEvent } from '@theme/events';
 import {
   getCartSectionsParam,
@@ -110,8 +118,8 @@ class CartItemsComponent extends HTMLElement {
         bodyPreview: responseText.slice(0, 500),
       });
 
-      if (!response.ok || !contentType.includes('json')) {
-        cartDebugError('items', 'cart change failed — non-JSON or error status', {
+      if (!response.ok || !isShopifyCartJsonResponse(contentType)) {
+        cartDebugError('items', 'cart change failed — unexpected response type', {
           status: response.status,
           contentType,
           body: responseText.slice(0, 500),
@@ -131,7 +139,11 @@ class CartItemsComponent extends HTMLElement {
         sectionKeys: data.sections ? Object.keys(data.sections) : [],
       });
 
-      await morphCartSectionsFromResponse(data.sections, this.sectionId);
+      try {
+        await morphCartSectionsFromResponse(data.sections, this.sectionId);
+      } catch (refreshError) {
+        cartDebugWarn('items', 'cart updated but UI refresh failed', refreshError);
+      }
 
       document.dispatchEvent(
         new CartUpdateEvent(data, this.sectionId, {

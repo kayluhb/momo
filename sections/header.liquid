@@ -51,11 +51,17 @@
 
     <div class="site-header__utilities flex min-h-0 min-w-0 flex-1 items-center justify-end gap-4 text-sm">
       {% if shop.customer_accounts_enabled %}
-        <shopify-account menu="{{ section.settings.customer_account_menu }}">
-          <span slot="signed-out-avatar" class="site-header__account-trigger">
-            {{ 'icon-account.svg' | inline_asset_content }}
-          </span>
-        </shopify-account>
+        <shopify-store
+          store-domain="{{ shop.secure_url }}"
+          country="{{ localization.country.iso_code }}"
+          language="{{ localization.language.iso_code }}"
+        >
+          <shopify-account menu="{{ section.settings.customer_account_menu }}">
+            <span slot="signed-out-avatar" class="site-header__account-trigger">
+              {{ 'icon-account.svg' | inline_asset_content }}
+            </span>
+          </shopify-account>
+        </shopify-store>
       {% endif %}
 
       <button

@@ -162,6 +162,16 @@ export function fetchConfig(type = 'json', config = {}) {
 }
 
 /**
+ * Shopify cart AJAX endpoints (.js) return JSON bodies with a text/javascript content-type.
+ * @param {string} contentType
+ * @returns {boolean}
+ */
+export function isShopifyCartJsonResponse(contentType) {
+  const type = contentType.toLowerCase();
+  return type.includes('json') || type.includes('javascript');
+}
+
+/**
  * Creates a debounced function that delays calling the provided function (fn)
  * until after wait milliseconds have elapsed since the last time
  * the debounced function was invoked. The returned function has a .cancel()

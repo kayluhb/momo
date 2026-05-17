@@ -6,6 +6,7 @@ import {
   cartDebugWarn,
   fetchConfig,
   getCartDomSnapshot,
+  isShopifyCartJsonResponse,
   onDocumentReady,
 } from '@theme/utilities';
 import {
@@ -58,12 +59,26 @@ function isCartAddErrorResponse(data) {
   if (!data || typeof data !== 'object') return true;
 
   const record = /** @type {Record<string, unknown>} */ (data);
+
+  if (Array.isArray(record.items) && record.items.length > 0) {
+    return false;
+  }
+
+  if (typeof record.item_count === 'number' && record.item_count > 0) {
+    return false;
+  }
+
   const status = record.status;
 
-  if (typeof status === 'string') return true;
-  if (typeof status === 'number' && status >= 400) return true;
+  if (typeof status === 'number' && status >= 400) {
+    return true;
+  }
 
-  return false;
+  if (typeof status === 'string') {
+    return status !== 'success';
+  }
+
+  return Boolean(record.description || record.message);
 }
 
 /**
@@ -248,8 +263,8 @@ async function handleProductFormSubmit(form) {
       bodyPreview: responseText.slice(0, 500),
     });
 
-    if (!response.ok || !contentType.includes('json')) {
-      cartDebugError('add', 'cart add failed — non-JSON or error status', {
+    if (!response.ok || !isShopifyCartJsonResponse(contentType)) {
+      cartDebugError('add', 'cart add failed — unexpected response type', {
         status: response.status,
         contentType,
         body: responseText.slice(0, 500),
@@ -302,13 +317,17 @@ async function handleProductFormSubmit(form) {
 
     const itemCount = getCartItemCount(data);
 
-    await morphCartSectionsFromResponse(
-      data && typeof data === 'object' && 'sections' in data
-        ? /** @type {Record<string, string>} */ (data).sections
-        : undefined,
-      getCartDrawerSectionId() ?? undefined
-    );
-    await refreshCartDrawerIfNeeded(data);
+    try {
+      await morphCartSectionsFromResponse(
+        data && typeof data === 'object' && 'sections' in data
+          ? /** @type {Record<string, string>} */ (data).sections
+          : undefined,
+        getCartDrawerSectionId() ?? undefined
+      );
+      await refreshCartDrawerIfNeeded(data);
+    } catch (refreshError) {
+      cartDebugWarn('add', 'item added but cart UI refresh failed', refreshError);
+    }
 
     showFormMessage(form, Theme.translations.add_to_cart_success);
 
