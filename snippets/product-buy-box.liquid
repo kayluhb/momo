@@ -41,28 +41,32 @@
 
   <div class="product-buy__form" data-product-form>
     {% form 'product', product %}
-      <label class="product-buy__label" for="product-variant-{{ section_id }}">
-        {{ 'products.variant_label' | t }}
-      </label>
-      <select
-        id="product-variant-{{ section_id }}"
-        class="product-buy__select"
-        name="id"
-      >
-        {% for variant in product.variants %}
-          <option
-            value="{{ variant.id }}"
-            {% if variant == current_variant %}
-              selected="selected"
-            {% endif %}
-            {% unless variant.available %}
-              disabled
-            {% endunless %}
-          >
-            {{ variant.title }} - {{ variant.price | money }}
-          </option>
-        {% endfor %}
-      </select>
+      {% if product.variants.size > 1 %}
+        <label class="product-buy__label" for="product-variant-{{ section_id }}">
+          {{ 'products.variant_label' | t }}
+        </label>
+        <select
+          id="product-variant-{{ section_id }}"
+          class="product-buy__select"
+          name="id"
+        >
+          {% for variant in product.variants %}
+            <option
+              value="{{ variant.id }}"
+              {% if variant == current_variant %}
+                selected="selected"
+              {% endif %}
+              {% unless variant.available %}
+                disabled
+              {% endunless %}
+            >
+              {{ variant.title }} - {{ variant.price | money }}
+            </option>
+          {% endfor %}
+        </select>
+      {% else %}
+        <input type="hidden" name="id" value="{{ current_variant.id }}">
+      {% endif %}
 
       <div class="product-buy__submit">
         {% assign add_to_cart_label = 'products.add_to_cart.label' | t %}
@@ -214,6 +218,20 @@
     .product-buy__payment
     .shopify-payment-button__button--unbranded:hover:not([disabled]) {
     background-color: rgb(255 255 255 / 12%) !important;
+  }
+
+  @media (max-width: 749px) {
+    .product-buy__form .shopify-product-form,
+    .product-buy__form > form {
+      align-items: stretch;
+      width: 100%;
+    }
+
+    .product-buy__select,
+    .product-buy__submit,
+    .product-buy__payment {
+      max-width: none;
+    }
   }
 
 {% endstylesheet %}

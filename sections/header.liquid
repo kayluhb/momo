@@ -190,7 +190,7 @@
 
   .site-header__inner {
     box-sizing: border-box;
-    max-width: min(calc(var(--page-width) - var(--page-margin) * 2), calc(100% - var(--page-margin) * 2));
+    max-width: var(--page-width);
     padding-inline: var(--page-margin);
   }
 
@@ -198,7 +198,7 @@
     .site-header__inner {
       gap: 0.5rem;
       max-width: 100%;
-      padding-inline: 0.75rem;
+      padding-inline: var(--page-margin-mobile);
     }
 
     .site-header__menu-trigger {

@@ -292,7 +292,7 @@ class ProductGallery extends HTMLElement {
     const activeThumb = scroller?.querySelector(GALLERY_SELECTORS.galleryThumbActive);
     if (!(scroller instanceof HTMLElement) || !(activeThumb instanceof HTMLElement)) return;
 
-    activeThumb.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+    activeThumb.scrollIntoView({ block: 'nearest', inline: 'nearest', behavior: 'smooth' });
 
     const wrap = this.querySelector(GALLERY_SELECTORS.thumbsWrap);
     if (wrap instanceof HTMLElement) {

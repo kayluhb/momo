@@ -6,7 +6,10 @@
 
 <cart-items-component data-section-id="{{ section_id }}">
   {% if cart.empty? %}
-    <p class="cart-empty">{{ 'cart.empty' | t }}</p>
+    <div class="cart-empty-state">
+      <p class="cart-empty">{{ 'cart.empty' | t }}</p>
+      {% render 'shopping-links' %}
+    </div>
   {% else %}
     <table class="cart-items">
       <thead>

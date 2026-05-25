@@ -35,6 +35,16 @@
         "unit": "px",
         "label": "t:labels.page_margin",
         "default": 20
+      },
+      {
+        "type": "range",
+        "id": "min_page_margin_mobile",
+        "min": 8,
+        "max": 40,
+        "step": 1,
+        "unit": "px",
+        "label": "t:labels.page_margin_mobile",
+        "default": 12
       }
     ]
   },
@@ -57,6 +67,18 @@
         "id": "cart_drawer_auto_open",
         "label": "t:labels.cart_drawer_auto_open",
         "default": true
+      }
+    ]
+  },
+  {
+    "name": "t:general.empty_states",
+    "settings": [
+      {
+        "type": "link_list",
+        "id": "empty_state_menu",
+        "label": "t:labels.empty_state_menu",
+        "info": "t:labels.empty_state_menu_info",
+        "default": "main-menu"
       }
     ]
   }

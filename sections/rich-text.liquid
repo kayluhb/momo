@@ -9,22 +9,16 @@
 
 <section
   id="shopify-section-{{ section.id }}"
-  class="rich-text full-width py-14 md:py-20 {{ section_bg }}"
+  class="rich-text full-width py-8 md:py-20 {{ section_bg }}"
 >
   <div class="section-inner rich-text__inner rich-text__inner--{{ text_align }}">
-    {% if section.settings.eyebrow != blank %}
-      <p class="rich-text__eyebrow type-eyebrow">{{ section.settings.eyebrow | escape }}</p>
-    {% endif %}
-
-    {% if section.settings.heading != blank %}
-      <h2 class="rich-text__heading{% if section.settings.display_size %} rich-text__heading--display{% endif %}">
-        {{ section.settings.heading | escape }}
-      </h2>
-    {% endif %}
-
-    {% if section.settings.text != blank %}
-      <div class="rich-text__body rte">{{ section.settings.text }}</div>
-    {% endif %}
+    {% render 'section-heading',
+      eyebrow: section.settings.eyebrow,
+      heading: section.settings.heading,
+      subheading: section.settings.text,
+      alignment: text_align,
+      heading_display: section.settings.display_size
+    %}
 
     {% if section.settings.button_label != blank and section.settings.button_link != blank %}
       <div class="rich-text__cta">
@@ -60,38 +54,18 @@
     justify-content: center;
   }
 
-  .rich-text__eyebrow {
-    margin: 0 0 0.75rem;
+  .rich-text .section-heading {
+    margin-bottom: 0;
   }
 
-  .rich-text__heading {
-    margin: 0 0 1.25rem;
-    font-size: clamp(1.875rem, 4vw, 2.375rem);
-    line-height: 1.08;
-  }
-
-  .rich-text__heading--display {
-    font-size: clamp(2.5rem, 6vw, 3.75rem);
-    line-height: 1.02;
-    letter-spacing: -0.03em;
-  }
-
-  .rich-text__body {
+  .rich-text .section-heading__subheading {
     font-size: 1.0625rem;
     line-height: 1.7;
   }
 
-  .rich-text__body :where(p) {
-    margin: 0 0 1rem;
-  }
-
-  .rich-text__body :where(p:last-child) {
-    margin-bottom: 0;
-  }
-
   .rich-text__cta {
     display: flex;
-    margin-top: 2rem;
+    margin-top: 1.25rem;
   }
 {% endstylesheet %}
 

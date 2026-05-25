@@ -5,15 +5,79 @@
   https://shopify.dev/docs/storefronts/themes/architecture/templates/404
 {% endcomment %}
 
-<h1>{{ '404.title' | t }}</h1>
+<section class="not-found full-width py-8 md:py-20">
+  <div class="section-inner not-found__inner">
+    <h1 class="not-found__title">{{ '404.title' | t }}</h1>
 
-<p>
-  {{ '404.not_found' | t }}
-</p>
+    <p class="not-found__message">
+      {{ '404.not_found' | t }}
+    </p>
 
-<a href="{{ routes.all_products_collection_url }}">
-  {{ '404.back_to_shopping' | t }}
-</a>
+    <div class="not-found__links">
+      {% render 'shopping-links' %}
+      {% liquid
+        assign empty_state_menu = settings.empty_state_menu
+        assign has_shopping_links = false
+        if empty_state_menu != blank
+          if empty_state_menu.links.size > 0
+            assign has_shopping_links = true
+          endif
+        endif
+      %}
+      {% unless has_shopping_links %}
+        <p class="not-found__fallback">
+          <a class="not-found__fallback-link" href="{{ routes.all_products_collection_url }}">
+            {{ '404.back_to_shopping' | t }}
+          </a>
+        </p>
+      {% endunless %}
+    </div>
+  </div>
+</section>
+
+{% stylesheet %}
+  .not-found__inner {
+    max-width: 32rem;
+  }
+
+  .not-found__title {
+    margin: 0 0 0.75rem;
+    font-size: clamp(2.5rem, 6vw, 4rem);
+    font-weight: 700;
+    line-height: 1;
+  }
+
+  .not-found__message {
+    margin: 0 0 1.5rem;
+    font-size: 1.125rem;
+  }
+
+  .not-found__links {
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+  }
+
+  .not-found__fallback {
+    margin: 0;
+  }
+
+  .not-found__fallback-link {
+    color: inherit;
+    font-weight: 600;
+    text-decoration: underline;
+    text-underline-offset: 0.2em;
+  }
+
+  .not-found__fallback-link:hover {
+    color: var(--color-brand-rust);
+  }
+
+  .not-found__fallback-link:focus-visible {
+    outline: 2px solid var(--color-brand-rust);
+    outline-offset: 2px;
+  }
+{% endstylesheet %}
 
 {% schema %}
 {

@@ -9,6 +9,7 @@
  */
 {
   "general": {
+    "shopping_links": "Shop by category",
     "accessibility": {
       "skip_to_main": "Skip to main content"
     },

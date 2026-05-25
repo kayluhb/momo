@@ -1,5 +1,9 @@
 {% doc %}
-  Global CSS custom properties, including typography. Degular loads from self-hosted woff2.
+  Global CSS custom properties, including typography and layout spacing.
+
+  Layout spacing:
+  - `--page-margin`: desktop horizontal gutter (from theme settings)
+  - `--page-margin-mobile`: mobile horizontal gutter (from theme settings)
 
   @example
   {% render 'css-variables' %}
@@ -20,8 +24,8 @@
     --font-weight-medium: 400;
     --font-weight-bold: 700;
     --page-width: {{ settings.max_page_width }};
-    --page-margin: {{ settings.min_page_margin }}px;
-    --page-margin-mobile: min(var(--page-margin), 0.5rem);
+    --page-margin: {{ settings.min_page_margin | default: 20 }}px;
+    --page-margin-mobile: {{ settings.min_page_margin_mobile | default: 12 }}px;
     --drawer-width: min(28rem, 100vw);
     --header-padding-y: 2rem;
     --header-padding-y-scrolled: 0.75rem;
@@ -37,6 +41,9 @@
     );
     --header-shrink-scroll-range: 96;
     --header-scroll-progress: 0;
+    --section-header-eyebrow-gap: 0.375rem;
+    --section-header-title-gap: 0.375rem;
+    --section-header-stack-gap: 2.75rem;
     --announcement-bar-height: calc(2.25rem + 0.875rem);
     --header-offset: calc(var(--header-height) + var(--announcement-bar-height));
     --header-offset-scrolled: calc(var(--header-height-scrolled) + var(--announcement-bar-height));

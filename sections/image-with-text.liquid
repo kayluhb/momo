@@ -5,7 +5,7 @@
 
 <section
   id="shopify-section-{{ section.id }}"
-  class="image-with-text full-width py-14 md:py-20 {{ section_bg }}"
+  class="image-with-text full-width py-8 md:py-20 {{ section_bg }}"
 >
   <div class="section-inner image-with-text__inner image-with-text__inner--image-{{ image_position }}">
     <div class="image-with-text__media">
@@ -29,17 +29,11 @@
     </div>
 
     <div class="image-with-text__content">
-      {% if section.settings.eyebrow != blank %}
-        <p class="image-with-text__eyebrow type-eyebrow">{{ section.settings.eyebrow | escape }}</p>
-      {% endif %}
-
-      {% if section.settings.heading != blank %}
-        <h2 class="image-with-text__heading">{{ section.settings.heading | escape }}</h2>
-      {% endif %}
-
-      {% if section.settings.text != blank %}
-        <div class="image-with-text__text rte">{{ section.settings.text }}</div>
-      {% endif %}
+      {% render 'section-heading',
+        eyebrow: section.settings.eyebrow,
+        heading: section.settings.heading,
+        subheading: section.settings.text
+      %}
 
       {% if section.settings.button_label != blank and section.settings.button_link != blank %}
         <div class="image-with-text__cta">
@@ -98,26 +92,7 @@
     opacity: 0.35;
   }
 
-  .image-with-text__eyebrow {
-    margin: 0 0 0.5rem;
-  }
-
-  .image-with-text__heading {
-    margin: 0 0 1rem;
-    font-size: clamp(1.875rem, 3.5vw, 2.375rem);
-    line-height: 1.1;
-  }
-
-  .image-with-text__text {
-    font-size: 1rem;
-    line-height: 1.65;
-  }
-
-  .image-with-text__text :where(p) {
-    margin: 0 0 1rem;
-  }
-
-  .image-with-text__text :where(p:last-child) {
+  .image-with-text .section-heading {
     margin-bottom: 0;
   }
 

@@ -73,6 +73,8 @@
 {% stylesheet %}
   .collection-hero {
     position: relative;
+    display: flex;
+    flex-direction: column;
     overflow: hidden;
   }
 
@@ -126,18 +128,25 @@
   }
 
   .collection-hero__content {
-    position: absolute;
-    inset: 0;
+    position: relative;
     z-index: 2;
     display: flex;
     flex-direction: column;
     justify-content: flex-end;
+    flex: 1 1 auto;
+    box-sizing: border-box;
     width: 100%;
-    max-width: min(calc(var(--page-width) - var(--page-margin) * 2), calc(100% - var(--page-margin) * 2));
+    max-width: var(--page-width);
     margin-inline: auto;
     padding: 1.5rem var(--page-margin);
     color: #fff;
     pointer-events: none;
+  }
+
+  @media (max-width: 749px) {
+    .collection-hero__content {
+      padding-inline: var(--page-margin-mobile);
+    }
   }
 
   .collection-hero__content .rte a {

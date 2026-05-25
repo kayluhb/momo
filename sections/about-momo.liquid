@@ -34,7 +34,7 @@
   class="about-momo full-width {{ section_bg }}{% if has_image %} about-momo--has-image{% endif %} about-momo--image-{{ image_position }}"
   {{ section.shopify_attributes }}
 >
-  <div class="about-momo__frame">
+  <div class="section-inner about-momo__frame">
     <div class="about-momo__rule" aria-hidden="true"></div>
 
     <div class="about-momo__masthead">
@@ -118,13 +118,7 @@
   .about-momo__frame {
     box-sizing: border-box;
     width: 100%;
-    padding: clamp(2.75rem, 7vw, 5rem) var(--page-margin);
-  }
-
-  @media (max-width: 749px) {
-    .about-momo__frame {
-      padding-inline: var(--page-margin-mobile);
-    }
+    padding-block: clamp(2.75rem, 7vw, 5rem);
   }
 
   .about-momo__rule {

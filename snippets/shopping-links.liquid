@@ -1,0 +1,64 @@
+{% doc %}
+  Renders product and collection links for empty cart, 404, and similar states.
+
+  Uses the theme "Empty state links" menu when no menu is passed.
+
+  @param {linklist} [menu] - Optional navigation menu override
+
+  @example
+  {% render 'shopping-links' %}
+  {% render 'shopping-links', menu: section.settings.links_menu %}
+{% enddoc %}
+
+{% liquid
+  if menu == blank
+    assign menu = settings.empty_state_menu
+  endif
+%}
+
+{% if menu != blank and menu.links.size > 0 %}
+  <nav class="shopping-links" aria-label="{{ 'general.shopping_links' | t }}">
+    <ul class="shopping-links__list">
+      {% for link in menu.links %}
+        <li class="shopping-links__item">
+          <a class="shopping-links__link" href="{{ link.url }}">
+            {{ link.title | escape }}
+          </a>
+        </li>
+      {% endfor %}
+    </ul>
+  </nav>
+{% endif %}
+
+{% stylesheet %}
+  .shopping-links__list {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .shopping-links__item + .shopping-links__item {
+    margin-top: 0.25rem;
+  }
+
+  .shopping-links__link {
+    display: block;
+    padding: 0.5rem 0;
+    color: inherit;
+    font-family: var(--font-brand--family, var(--font-display--family, sans-serif));
+    font-size: 0.9375rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-decoration: none;
+    text-transform: uppercase;
+  }
+
+  .shopping-links__link:hover {
+    color: var(--color-brand-rust);
+  }
+
+  .shopping-links__link:focus-visible {
+    outline: 2px solid var(--color-brand-rust);
+    outline-offset: 2px;
+  }
+{% endstylesheet %}
