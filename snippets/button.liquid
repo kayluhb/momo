@@ -54,6 +54,7 @@
     line-height: 1.2;
     text-decoration: none;
     text-transform: uppercase;
+    --btn-focus-ring: currentColor;
     transition:
       background-color 0.2s ease,
       border-color 0.2s ease,
@@ -62,7 +63,7 @@
   }
 
   .btn:focus-visible {
-    outline: 2px solid currentColor;
+    outline: 2px solid var(--btn-focus-ring);
     outline-offset: 3px;
   }
 
@@ -70,6 +71,7 @@
     border-color: var(--color-brand-steel, #00253f);
     background-color: var(--color-brand-steel, #00253f);
     color: #fff;
+    --btn-focus-ring: var(--color-brand-steel, #00253f);
   }
 
   .btn--primary:hover {
@@ -82,6 +84,7 @@
     border-color: #fff;
     background-color: #fff;
     color: #121212;
+    --btn-focus-ring: #fff;
   }
 
   .btn--primary.btn--on-dark:hover {

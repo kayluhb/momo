@@ -581,14 +581,23 @@
     var shrinkRange = parseFloat(getComputedStyle(root).getPropertyValue('--header-shrink-scroll-range')) || 96;
     var ticking = false;
 
+    function getScrollY() {
+      if (document.body.style.position === 'fixed' && document.body.style.top) {
+        return Math.abs(parseFloat(document.body.style.top)) || 0;
+      }
+
+      return window.scrollY;
+    }
+
     function setScrollProgress() {
       ticking = false;
+      var scrollY = getScrollY();
       var progress;
 
       if (reduceMotion.matches) {
-        progress = window.scrollY > 0 ? 1 : 0;
+        progress = scrollY > 0 ? 1 : 0;
       } else {
-        progress = Math.min(1, Math.max(0, window.scrollY / shrinkRange));
+        progress = Math.min(1, Math.max(0, scrollY / shrinkRange));
       }
 
       root.style.setProperty('--header-scroll-progress', String(progress));
@@ -606,6 +615,8 @@
     }
 
     reduceMotion.addEventListener('change', setScrollProgress);
+    document.addEventListener('dialog:open', setScrollProgress);
+    document.addEventListener('dialog:close', setScrollProgress);
     setScrollProgress();
     window.addEventListener('scroll', onScroll, { passive: true });
     window.addEventListener('resize', setScrollProgress, { passive: true });
