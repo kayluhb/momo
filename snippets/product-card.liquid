@@ -175,7 +175,6 @@
     height: 100%;
     border-radius: var(--style-border-radius);
     background: #fff;
-    overflow: hidden;
     box-shadow: 0 1px 0 rgb(0 37 63 / 6%);
     transition: box-shadow 200ms ease, transform 200ms ease;
   }
@@ -192,7 +191,13 @@
     text-decoration: none;
   }
 
+  .product-card__media:focus-visible {
+    outline: none;
+    box-shadow: inset 0 0 0 2px var(--color-brand-rust, #c57639);
+  }
+
   .product-card--grid .product-card__media {
+    border-radius: var(--style-border-radius) var(--style-border-radius) 0 0;
     aspect-ratio: 1 / 1;
     background: #fff;
   }
@@ -302,6 +307,12 @@
 
   .product-card__title a:hover {
     color: var(--color-brand-rust);
+  }
+
+  .product-card__title a:focus-visible {
+    outline: 2px solid var(--color-brand-rust, #c57639);
+    outline-offset: 2px;
+    border-radius: var(--style-border-radius);
   }
 
   .product-card__rating {
