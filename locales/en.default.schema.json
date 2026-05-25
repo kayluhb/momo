@@ -318,6 +318,9 @@
         "default_name": "Product recommendations"
       }
     },
+    "page": {
+      "show_title_label": "Show page title"
+    },
     "about_momo": {
       "name": "About Momo",
       "image_label": "Image",

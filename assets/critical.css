@@ -163,6 +163,7 @@ b {
     .testimonials__quote p,
     .promo-banner__text,
     .site-footer__text,
+    .page-content__body,
     .rte
   ) {
   font-family: var(--font-brand--family, var(--font-body--family, var(--font-primary--family)));

@@ -1,17 +1,126 @@
 {% comment %}
-  This section is used in the page template to render store pages like About us
-  or Contact us.
+  Renders Shopify page content with theme layout and typography.
 
   https://shopify.dev/docs/storefronts/themes/architecture/templates/page
 {% endcomment %}
 
-<h1>{{ page.title }}</h1>
+{% capture section_bg %}{% render 'section-color-scheme', scheme: section.settings.color_scheme %}{% endcapture %}
 
-{{ page.content }}
+<section
+  id="shopify-section-{{ section.id }}"
+  class="page-content full-width py-8 md:py-20 {{ section_bg }}"
+>
+  <div class="section-inner page-content__inner">
+    {% if section.settings.show_title %}
+      <h1 class="page-content__title">{{ page.title }}</h1>
+    {% endif %}
+
+    {% if page.content != blank %}
+      <div class="page-content__body rte">
+        {{ page.content }}
+      </div>
+    {% endif %}
+  </div>
+</section>
+
+{% stylesheet %}
+  .page-content .section-inner {
+    width: 100%;
+    max-width: min(42rem, 100%);
+  }
+
+  .page-content__title {
+    margin: 0 0 clamp(1.25rem, 3vw, 2rem);
+    font-size: clamp(2rem, 5vw, 3rem);
+    line-height: 1.05;
+    letter-spacing: -0.03em;
+    text-wrap: balance;
+  }
+
+  .page-content__body {
+    font-size: 1rem;
+    line-height: 1.7;
+    letter-spacing: 0.01em;
+  }
+
+  .page-content__body :where(p) {
+    margin: 0 0 1rem;
+  }
+
+  .page-content__body :where(p:last-child) {
+    margin-bottom: 0;
+  }
+
+  .page-content__body :where(h2, h3, h4) {
+    margin: clamp(1.75rem, 4vw, 2.5rem) 0 0.75rem;
+    font-size: clamp(1.25rem, 2.5vw, 1.5rem);
+    line-height: 1.2;
+    letter-spacing: -0.02em;
+    text-wrap: balance;
+  }
+
+  .page-content__body :where(h2:first-child, h3:first-child, h4:first-child) {
+    margin-top: 0;
+  }
+
+  .page-content__body :where(ul, ol) {
+    margin: 0 0 1rem;
+    padding-inline-start: 1.25rem;
+  }
+
+  .page-content__body :where(li + li) {
+    margin-top: 0.35rem;
+  }
+
+  .page-content__body :where(a) {
+    font-weight: var(--font-weight-bold, 700);
+    color: var(--color-brand-rust, #c57639);
+    text-decoration: underline;
+    text-underline-offset: 0.15em;
+  }
+
+  .page-content__body :where(a):hover {
+    color: color-mix(in srgb, var(--color-brand-rust, #c57639) 82%, #000);
+  }
+
+  .page-content__body :where(a):focus-visible {
+    outline: 2px solid var(--color-brand-rust, #c57639);
+    outline-offset: 2px;
+  }
+
+  :where(.bg-brand-earth, .bg-brand-steel, .bg-brand-warmth, .bg-brand-heart) .page-content__body :where(a) {
+    color: #fff;
+  }
+{% endstylesheet %}
 
 {% schema %}
 {
   "name": "t:general.page",
-  "settings": []
+  "tag": "section",
+  "class": "section-page",
+  "settings": [
+    {
+      "type": "checkbox",
+      "id": "show_title",
+      "label": "t:sections.page.show_title_label",
+      "default": true
+    },
+    {
+      "type": "header",
+      "content": "t:sections.shared.appearance_header"
+    },
+    {
+      "type": "select",
+      "id": "color_scheme",
+      "label": "t:sections.shared.color_scheme_label",
+      "default": "white",
+      "options": [
+        { "value": "white", "label": "t:options.color_scheme.white" },
+        { "value": "canvas", "label": "t:options.color_scheme.canvas" },
+        { "value": "earth", "label": "t:options.color_scheme.earth" },
+        { "value": "steel", "label": "t:options.color_scheme.steel" }
+      ]
+    }
+  ]
 }
 {% endschema %}
