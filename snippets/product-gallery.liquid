@@ -211,6 +211,7 @@
   .product-gallery__stage {
     position: relative;
     overflow: hidden;
+    border-radius: var(--style-border-radius);
     aspect-ratio: 4 / 5;
     background-color: color-mix(in srgb, currentColor 8%, transparent);
   }
@@ -236,7 +237,7 @@
     height: 2.5rem;
     padding: 0;
     border: 1px solid color-mix(in srgb, currentColor 18%, transparent);
-    border-radius: 999px;
+    border-radius: var(--style-border-radius);
     background: color-mix(in srgb, var(--color-background, #fff) 88%, transparent);
     color: currentcolor;
     cursor: pointer;
@@ -386,7 +387,7 @@
     height: 0.5rem;
     padding: 0;
     border: none;
-    border-radius: 999px;
+    border-radius: var(--style-border-radius);
     background-color: color-mix(in srgb, currentColor 28%, transparent);
     cursor: pointer;
   }
@@ -456,6 +457,7 @@
     height: 1.5rem;
     padding: 0;
     border: 0;
+    border-radius: var(--style-border-radius);
     background: color-mix(in srgb, var(--color-background, #fff) 92%, transparent);
     color: currentcolor;
     cursor: pointer;
@@ -516,6 +518,7 @@
     padding: 0;
     overflow: hidden;
     border: 2px solid transparent;
+    border-radius: var(--style-border-radius);
     background: color-mix(in srgb, currentColor 6%, transparent);
     cursor: pointer;
   }

@@ -290,7 +290,6 @@
     "bento_grid": {
       "name": "Bento grid",
       "gap_label": "Tile gap",
-      "corner_radius_label": "Corner radius",
       "min_height_label": "Minimum height on desktop",
       "presets": {
         "default_name": "Bento grid"

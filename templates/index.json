@@ -130,7 +130,6 @@
         "subheading": "",
         "heading_alignment": "center",
         "gap": 12,
-        "corner_radius": 14,
         "min_height": 520,
         "color_scheme": "earth"
       }

@@ -5,7 +5,6 @@
   class="bento-grid full-width py-8 md:py-20 {{ section_bg }}"
   style="
     --bento-gap: {{ section.settings.gap }}px;
-    --bento-radius: {{ section.settings.corner_radius }}px;
     --bento-min-height: {{ section.settings.min_height }}px;
   "
 >
@@ -127,7 +126,7 @@
     position: relative;
     display: block;
     overflow: hidden;
-    border-radius: var(--bento-radius, 14px);
+    border-radius: var(--style-border-radius);
     color: #fff;
     text-decoration: none;
     isolation: isolate;
@@ -312,16 +311,6 @@
       "step": 2,
       "unit": "px",
       "default": 12
-    },
-    {
-      "type": "range",
-      "id": "corner_radius",
-      "label": "t:sections.bento_grid.corner_radius_label",
-      "min": 0,
-      "max": 24,
-      "step": 2,
-      "unit": "px",
-      "default": 14
     },
     {
       "type": "range",

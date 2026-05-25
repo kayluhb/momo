@@ -461,7 +461,7 @@ div.pswp__img--placeholder,
   opacity: 1;
   background: var(--pswp-arrow-bg);
   border: 1px solid var(--pswp-arrow-border);
-  border-radius: 50%;
+  border-radius: var(--style-border-radius);
   box-shadow: 0 0 0 var(--pswp-arrow-ring-width) var(--pswp-arrow-ring);
   transition: transform 200ms ease, background-color 200ms ease;
 }

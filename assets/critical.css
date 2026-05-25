@@ -44,6 +44,14 @@ select {
   border-radius: var(--style-border-radius-inputs);
 }
 
+button,
+input[type='submit'],
+input[type='button'],
+input[type='reset'],
+.btn {
+  border-radius: var(--style-border-radius);
+}
+
 select {
   background-color: var(--color-background);
   color: currentcolor;
