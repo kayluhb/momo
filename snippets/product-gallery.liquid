@@ -11,7 +11,13 @@
 {% liquid
   assign gallery_layout = layout | default: 'split'
   assign current_variant = product.selected_or_first_available_variant
-  assign initial_media = current_variant.featured_media | default: product.featured_media
+  assign initial_media = product.media.first
+
+  if request.params.variant != blank
+    if current_variant.featured_media
+      assign initial_media = current_variant.featured_media
+    endif
+  endif
 
   if gallery_layout == 'hero'
     assign image_sizes = '100vw'
@@ -205,15 +211,8 @@
   .product-gallery__stage {
     position: relative;
     overflow: hidden;
-    border-radius: 0.5rem;
     aspect-ratio: 4 / 5;
     background-color: color-mix(in srgb, currentColor 8%, transparent);
-  }
-
-  @media (max-width: 749px) {
-    .product-gallery__stage {
-      border-radius: 0;
-    }
   }
 
   .product-gallery__zoom-link {
@@ -457,7 +456,6 @@
     height: 1.5rem;
     padding: 0;
     border: 0;
-    border-radius: 0.25rem;
     background: color-mix(in srgb, var(--color-background, #fff) 92%, transparent);
     color: currentcolor;
     cursor: pointer;
@@ -518,7 +516,6 @@
     padding: 0;
     overflow: hidden;
     border: 2px solid transparent;
-    border-radius: 0.25rem;
     background: color-mix(in srgb, currentColor 6%, transparent);
     cursor: pointer;
   }

@@ -14,6 +14,16 @@
   endif
 
   assign current_variant = product.selected_or_first_available_variant
+  assign variant_available = current_variant.available
+  assign check_against_inventory = true
+  if current_variant.inventory_management != 'shopify' or current_variant.inventory_policy == 'continue'
+    assign check_against_inventory = false
+  endif
+  if check_against_inventory
+    if current_variant.quantity_rule.min > current_variant.inventory_quantity
+      assign variant_available = false
+    endif
+  endif
   assign eyebrow_text = product.vendor
   if eyebrow_text == blank and product.type != blank
     assign eyebrow_text = product.type
@@ -40,49 +50,61 @@
   {% endif %}
 
   <div class="product-buy__form" data-product-form>
-    {% form 'product', product %}
-      {% if product.variants.size > 1 %}
-        <label class="product-buy__label" for="product-variant-{{ section_id }}">
-          {{ 'products.variant_label' | t }}
-        </label>
-        <select
-          id="product-variant-{{ section_id }}"
-          class="product-buy__select"
-          name="id"
-        >
-          {% for variant in product.variants %}
-            <option
-              value="{{ variant.id }}"
-              {% if variant == current_variant %}
-                selected="selected"
-              {% endif %}
-              {% unless variant.available %}
-                disabled
-              {% endunless %}
-            >
-              {{ variant.title }} - {{ variant.price | money }}
-            </option>
-          {% endfor %}
-        </select>
-      {% else %}
-        <input type="hidden" name="id" value="{{ current_variant.id }}">
-      {% endif %}
+    {% if variant_available %}
+      {% form 'product', product %}
+        {% if product.variants.size > 1 %}
+          <label class="product-buy__label" for="product-variant-{{ section_id }}">
+            {{ 'products.variant_label' | t }}
+          </label>
+          <select
+            id="product-variant-{{ section_id }}"
+            class="product-buy__select"
+            name="id"
+          >
+            {% for variant in product.variants %}
+              <option
+                value="{{ variant.id }}"
+                {% if variant == current_variant %}
+                  selected="selected"
+                {% endif %}
+                {% unless variant.available %}
+                  disabled
+                {% endunless %}
+              >
+                {{ variant.title }} - {{ variant.price | money }}
+              </option>
+            {% endfor %}
+          </select>
+        {% else %}
+          <input type="hidden" name="id" value="{{ current_variant.id }}">
+        {% endif %}
 
-      <div class="product-buy__submit">
-        {% assign add_to_cart_label = 'products.add_to_cart.label' | t %}
-        {% render 'button',
-          label: add_to_cart_label,
-          tag: 'button',
-          button_type: 'submit',
-          style: 'primary'
-        %}
-      </div>
+        <div class="product-buy__submit">
+          {% assign add_to_cart_label = 'products.add_to_cart.label' | t %}
+          {% render 'button', label: add_to_cart_label, tag: 'button', button_type: 'submit', style: 'primary' %}
+        </div>
 
-      <div class="product-buy__payment">
-        {{ form | payment_button }}
+        <div class="product-buy__payment">
+          {{ form | payment_button }}
+        </div>
+      {% endform %}
+    {% else %}
+      <div class="product-buy__sold-out" data-product-sold-out>
+        <p class="product-buy__availability">{{ 'products.sold_out.label' | t }}</p>
+        <div class="product-buy__submit">
+          <button
+            type="button"
+            class="btn btn--primary product-buy__notify-trigger"
+            on:click="back-in-stock-component/open"
+          >
+            {{ 'products.back_in_stock.open' | t }}
+          </button>
+        </div>
       </div>
-    {% endform %}
+    {% endif %}
   </div>
+
+  {% render 'back-in-stock-dialog', product: product, variant: current_variant, section_id: section_id %}
 </div>
 
 {% stylesheet %}
@@ -90,6 +112,10 @@
     position: sticky;
     top: calc(var(--header-height, 0px) + 1rem);
     align-self: start;
+  }
+
+  .product-buy--hero {
+    max-width: 42rem;
   }
 
   .product-section__details .product-buy--sticky {
@@ -148,6 +174,18 @@
     align-items: flex-start;
   }
 
+  .product-buy__availability {
+    margin: 0 0 1rem;
+    font-size: 0.875rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+  }
+
+  .product-buy__sold-out .product-buy__submit {
+    margin-top: 0;
+  }
+
   .product-buy__label {
     font-size: 0.875rem;
     font-weight: 600;
@@ -203,10 +241,7 @@
     letter-spacing: 0.04em !important;
     line-height: 1.2 !important;
     text-transform: uppercase !important;
-    transition:
-      background-color 0.2s ease,
-      border-color 0.2s ease,
-      color 0.2s ease !important;
+    transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease !important;
   }
 
   .product-buy__payment .shopify-payment-button__button--unbranded:hover:not([disabled]) {
@@ -233,5 +268,4 @@
       max-width: none;
     }
   }
-
 {% endstylesheet %}

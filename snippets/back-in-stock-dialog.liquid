@@ -1,0 +1,214 @@
+{% doc %}
+  Renders a dialog for back-in-stock email signup.
+
+  @param {product} product - The product being viewed
+  @param {variant} variant - The out-of-stock variant
+  @param {string} section_id - Section ID for unique form field IDs
+{% enddoc %}
+
+{% liquid
+  assign form_id = 'back-in-stock-form-' | append: section_id
+  assign email_id = 'back-in-stock-email-' | append: section_id
+  assign dialog_heading_id = 'back-in-stock-heading-' | append: section_id
+  assign back_in_stock_body = 'products.back_in_stock.body' | t: product_title: product.title, variant_title: variant.title, variant_id: variant.id
+  if variant.sku != blank
+    assign back_in_stock_body = back_in_stock_body | append: ', SKU: ' | append: variant.sku
+  endif
+%}
+
+<back-in-stock-component class="back-in-stock">
+  <dialog
+    ref="dialog"
+    class="back-in-stock__dialog"
+    aria-labelledby="{{ dialog_heading_id }}"
+  >
+    <div class="back-in-stock__inner">
+      <header class="back-in-stock__header">
+        <h2 id="{{ dialog_heading_id }}" class="back-in-stock__heading">
+          {{ 'products.back_in_stock.title' | t }}
+        </h2>
+        <button
+          type="button"
+          class="dialog-drawer__close back-in-stock__close"
+          on:click="back-in-stock-component/close"
+          aria-label="{{ 'products.back_in_stock.close' | t }}"
+        >
+          <span class="dialog-drawer__close-icon" aria-hidden="true">{{ 'icon-close.svg' | inline_asset_content }}</span>
+        </button>
+      </header>
+
+      <p class="back-in-stock__description">
+        {{ 'products.back_in_stock.description' | t: product_title: product.title | escape }}
+      </p>
+
+      <div class="back-in-stock__form-wrap" data-back-in-stock-form-wrap>
+        {% form 'contact', id: form_id, class: 'back-in-stock__form' %}
+          <input type="hidden" name="contact[tags]" value="back-in-stock">
+          <input
+            type="hidden"
+            name="contact[body]"
+            value="{{ back_in_stock_body | escape }}"
+            data-back-in-stock-body
+          >
+
+          <label class="back-in-stock__label" for="{{ email_id }}">
+            {{ 'products.back_in_stock.email_label' | t }}
+          </label>
+          <input
+            type="email"
+            id="{{ email_id }}"
+            class="back-in-stock__input"
+            name="contact[email]"
+            autocomplete="email"
+            required
+            {% if form.email %}
+              value="{{ form.email }}"
+            {% elsif customer %}
+              value="{{ customer.email }}"
+            {% endif %}
+          >
+
+          <p class="back-in-stock__status" data-back-in-stock-status hidden role="status"></p>
+
+          <div class="back-in-stock__actions">
+            {% assign submit_label = 'products.back_in_stock.submit' | t %}
+            {% render 'button',
+              label: submit_label,
+              tag: 'button',
+              button_type: 'submit',
+              style: 'primary',
+              class: 'back-in-stock__submit'
+            %}
+          </div>
+        {% endform %}
+      </div>
+
+      <p class="back-in-stock__success" data-back-in-stock-success hidden role="status">
+        {{ 'products.back_in_stock.success' | t }}
+      </p>
+    </div>
+  </dialog>
+</back-in-stock-component>
+
+{% stylesheet %}
+  .back-in-stock__dialog {
+    --animation-speed: 250ms;
+    --animation-easing: cubic-bezier(0.4, 0, 0.2, 1);
+
+    box-sizing: border-box;
+    width: min(28rem, calc(100% - 2rem));
+    max-width: 100%;
+    max-height: calc(100dvh - 2rem);
+    margin: auto;
+    padding: 0;
+    border: none;
+    border-radius: 0.75rem;
+    background: #fff;
+    color: var(--color-brand-steel, #00253f);
+    overflow: auto;
+    box-shadow: 0 24px 48px rgb(0 0 0 / 18%);
+  }
+
+  .back-in-stock__dialog[open] {
+    animation: back-in-stock-fade-in var(--animation-speed) var(--animation-easing) forwards;
+  }
+
+  .back-in-stock__dialog.dialog-closing {
+    animation: back-in-stock-fade-out var(--animation-speed) var(--animation-easing) forwards;
+  }
+
+  .back-in-stock__dialog::backdrop {
+    background: rgb(0 0 0 / 45%);
+  }
+
+  .back-in-stock__inner {
+    display: grid;
+    gap: 1.25rem;
+    padding: 1.5rem;
+  }
+
+  .back-in-stock__header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 1rem;
+  }
+
+  .back-in-stock__heading {
+    margin: 0;
+    font-size: 1.375rem;
+    line-height: 1.2;
+    font-weight: 700;
+  }
+
+  .back-in-stock__description {
+    margin: 0;
+    font-size: 0.9375rem;
+    line-height: 1.6;
+  }
+
+  .back-in-stock__form {
+    display: grid;
+    gap: 0.75rem;
+  }
+
+  .back-in-stock__label {
+    font-size: 0.875rem;
+    font-weight: 600;
+  }
+
+  .back-in-stock__input {
+    width: 100%;
+    padding: 0.625rem 0.75rem;
+    border: 1px solid color-mix(in srgb, currentColor 20%, transparent);
+    border-radius: 0.25rem;
+    background: transparent;
+    color: inherit;
+    font: inherit;
+  }
+
+  .back-in-stock__input:focus-visible {
+    outline: 2px solid var(--color-brand-rust, #c57639);
+    outline-offset: 2px;
+  }
+
+  .back-in-stock__status {
+    margin: 0;
+    font-size: 0.875rem;
+    color: var(--color-brand-rust, #c57639);
+  }
+
+  .back-in-stock__actions .btn {
+    width: 100%;
+  }
+
+  .back-in-stock__success {
+    margin: 0;
+    font-size: 0.9375rem;
+    line-height: 1.6;
+  }
+
+  @keyframes back-in-stock-fade-in {
+    from {
+      opacity: 0;
+      transform: translateY(0.75rem);
+    }
+
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @keyframes back-in-stock-fade-out {
+    from {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    to {
+      opacity: 0;
+      transform: translateY(0.75rem);
+    }
+  }
+{% endstylesheet %}

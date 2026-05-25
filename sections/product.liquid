@@ -27,41 +27,21 @@
       %}
 
       <div class="section-inner product-section__buy product-section__buy--hero">
-        {% render 'product-buy-box',
-          product: product,
-          section_id: section.id,
-          layout: 'hero'
-        %}
+        {% render 'product-buy-box', product: product, section_id: section.id, layout: 'hero' %}
       </div>
     {% elsif product_layout == 'split_half' %}
       <div class="product-section__split-half product-section__split-half--image-{{ image_position }}">
-        {% render 'product-gallery',
-          product: product,
-          layout: 'split_half',
-          section_id: section.id
-        %}
+        {% render 'product-gallery', product: product, layout: 'split_half', section_id: section.id %}
 
         <div class="product-section__details">
-          {% render 'product-buy-box',
-            product: product,
-            section_id: section.id,
-            layout: 'split_half'
-          %}
+          {% render 'product-buy-box', product: product, section_id: section.id, layout: 'split_half' %}
         </div>
       </div>
     {% else %}
       <div class="section-inner product-section__inner product-section__inner--image-{{ image_position }}">
-        {% render 'product-gallery',
-          product: product,
-          layout: product_layout,
-          section_id: section.id
-        %}
+        {% render 'product-gallery', product: product, layout: product_layout, section_id: section.id %}
 
-        {% render 'product-buy-box',
-          product: product,
-          section_id: section.id,
-          layout: product_layout
-        %}
+        {% render 'product-buy-box', product: product, section_id: section.id, layout: product_layout %}
       </div>
     {% endif %}
   </variant-picker>

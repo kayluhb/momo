@@ -33,6 +33,21 @@
       "sale": "Sale",
       "sold_out": "Sold out"
     },
+    "sold_out": {
+      "label": "Sold out"
+    },
+    "back_in_stock": {
+      "open": "Notify me when available",
+      "title": "Back in stock alert",
+      "description": "Enter your email and we will notify you when {{ product_title }} is available again.",
+      "email_label": "Email",
+      "submit": "Notify me",
+      "submitting": "Sending…",
+      "success": "You're on the list. We'll email you when this item is back.",
+      "error": "Something went wrong. Please try again.",
+      "close": "Close",
+      "body": "Back in stock request for {{ product_title }} — {{ variant_title }} (Variant ID: {{ variant_id }})"
+    },
     "rating_label": "{{ rating }} out of 5 stars{% if count %}, {{ count }} reviews{% endif %}",
     "color_options": "{{ option }} options",
     "price": {
