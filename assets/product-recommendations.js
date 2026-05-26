@@ -121,8 +121,19 @@ class ProductRecommendationsComponent extends Component {
     this.refs.recentlyViewedPanel.hidden = isRelated;
 
     if (!isRelated && !this.refs.recentlyViewedPanel.dataset.loaded) {
+      this.#showSkeleton(this.refs.recentlyViewedPanel);
       this.#loadRecentlyViewed();
     }
+  }
+
+  /** @param {HTMLElement} panel */
+  #showSkeleton(panel) {
+    const template = this.refs.gridSkeleton;
+    if (!(template instanceof HTMLTemplateElement)) return;
+
+    panel.replaceChildren(template.content.cloneNode(true));
+    panel.removeAttribute('data-loaded');
+    panel.setAttribute('aria-busy', 'true');
   }
 
   #observeRelated() {
@@ -131,7 +142,7 @@ class ProductRecommendationsComponent extends Component {
       return;
     }
 
-    if (this.refs.relatedPanel.querySelector('.collection-page__grid li')) {
+    if (this.refs.relatedPanel.querySelector('[data-product-card]')) {
       this.refs.relatedPanel.dataset.loaded = 'true';
       this.#hydrateCards(this.refs.relatedPanel);
       return;
@@ -153,9 +164,16 @@ class ProductRecommendationsComponent extends Component {
     const url = this.dataset.recommendationsUrl;
     if (!url) return;
 
+    if (!this.refs.relatedPanel.dataset.loaded) {
+      this.#showSkeleton(this.refs.relatedPanel);
+    }
+
     try {
       const response = await fetch(url);
-      if (!response.ok) return;
+      if (!response.ok) {
+        this.#hideIfEmpty();
+        return;
+      }
 
       const html = await response.text();
       const doc = new DOMParser().parseFromString(html, 'text/html');
@@ -166,7 +184,7 @@ class ProductRecommendationsComponent extends Component {
         return;
       }
 
-      const hasProducts = panel.querySelector('.collection-page__grid li');
+      const hasProducts = panel.querySelector('[data-product-card]');
       if (!hasProducts) {
         this.#hideIfEmpty();
         return;
@@ -174,6 +192,7 @@ class ProductRecommendationsComponent extends Component {
 
       this.refs.relatedPanel.innerHTML = panel.innerHTML;
       this.refs.relatedPanel.dataset.loaded = 'true';
+      this.refs.relatedPanel.removeAttribute('aria-busy');
       this.#hydrateCards(this.refs.relatedPanel);
     } catch {
       this.#hideIfEmpty();
@@ -202,13 +221,19 @@ class ProductRecommendationsComponent extends Component {
       const doc = new DOMParser().parseFromString(html, 'text/html');
       const grid = doc.querySelector('[data-recently-viewed-grid]');
 
-      if (!(grid instanceof HTMLElement)) return;
+      if (!(grid instanceof HTMLElement)) {
+        this.refs.recentlyViewedPanel.replaceChildren();
+        this.refs.recentlyViewedPanel.removeAttribute('aria-busy');
+        return;
+      }
 
       this.refs.recentlyViewedPanel.innerHTML = grid.outerHTML;
       this.refs.recentlyViewedPanel.dataset.loaded = 'true';
+      this.refs.recentlyViewedPanel.removeAttribute('aria-busy');
       this.#hydrateCards(this.refs.recentlyViewedPanel);
     } catch {
-      // Ignore fetch errors.
+      this.refs.recentlyViewedPanel.replaceChildren();
+      this.refs.recentlyViewedPanel.removeAttribute('aria-busy');
     }
   }
 
@@ -218,12 +243,12 @@ class ProductRecommendationsComponent extends Component {
   }
 
   #hideIfEmpty() {
-    const relatedEmpty = !this.refs.relatedPanel.querySelector('.collection-page__grid li');
+    const relatedEmpty = !this.refs.relatedPanel.querySelector('[data-product-card]');
     const recentHidden = this.refs.recentlyViewedTab.hidden;
     const recentEmpty =
       recentHidden || this.refs.recentlyViewedPanel.dataset.loaded !== 'true'
         ? recentHidden
-        : !this.refs.recentlyViewedPanel.querySelector('.collection-page__grid li');
+        : !this.refs.recentlyViewedPanel.querySelector('[data-product-card]');
 
     if (relatedEmpty && recentEmpty) {
       this.closest('.shopify-section')?.setAttribute('hidden', '');

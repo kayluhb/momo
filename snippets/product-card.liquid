@@ -79,88 +79,88 @@
 %}
 
 <article class="product-card{% if is_grid_card %} product-card--grid{% endif %}" data-product-card>
-  <a class="product-card__media" href="{{ product.url }}">
-    {% if product.featured_image %}
-      <div class="product-card__image product-card__image--primary">
-        {{
-          product.featured_image
-          | image_url: width: 800
-          | image_tag:
-            loading: 'lazy',
-            sizes: card_image_sizes,
-            widths: '400,600,800',
-            alt: product.featured_image.alt
-            | default: product.title
-        }}
-      </div>
-      {% if show_hover_image %}
-        <div class="product-card__image product-card__image--secondary">
+  <a class="product-card__link" href="{{ product.url }}">
+    <div class="product-card__media">
+      {% if product.featured_image %}
+        <div class="product-card__image product-card__image--primary">
           {{
-            secondary_image
+            product.featured_image
             | image_url: width: 800
             | image_tag:
               loading: 'lazy',
               sizes: card_image_sizes,
               widths: '400,600,800',
-              alt: secondary_image.alt
-              | default: product.title
+              alt: '',
+              class: 'product-card__img'
           }}
         </div>
+        {% if show_hover_image %}
+          <div class="product-card__image product-card__image--secondary">
+            {{
+              secondary_image
+              | image_url: width: 800
+              | image_tag:
+                loading: 'lazy',
+                sizes: card_image_sizes,
+                widths: '400,600,800',
+                alt: '',
+                class: 'product-card__img'
+            }}
+          </div>
+        {% endif %}
+      {% else %}
+        <div class="product-card__placeholder">
+          {{ 'product-1' | placeholder_svg_tag: 'product-card__placeholder-svg' }}
+        </div>
       {% endif %}
-    {% else %}
-      <div class="product-card__placeholder">
-        {{ 'product-1' | placeholder_svg_tag: 'product-card__placeholder-svg' }}
-      </div>
-    {% endif %}
 
-    {% if is_new %}
-      <span class="product-card__badge product-card__badge--new">{{ 'products.badge.new' | t }}</span>
-    {% elsif on_sale %}
-      <span class="product-card__badge">{{ 'products.badge.sale' | t }}</span>
-    {% elsif product.available == false %}
-      <span class="product-card__badge product-card__badge--sold-out">{{ 'products.badge.sold_out' | t }}</span>
-    {% endif %}
-  </a>
-
-  <div class="product-card__info">
-    <div class="product-card__title-row">
-      <h3 class="product-card__title">
-        <a href="{{ product.url }}">{{ product.title | escape }}</a>
-      </h3>
-      {% if rating_value != blank %}
-        <p class="product-card__rating" aria-label="{{ 'products.rating_label' | t: rating: rating_value, count: rating_count }}">
-          <span class="product-card__rating-value">{{ rating_value }}</span>
-          <span class="product-card__rating-star" aria-hidden="true">★</span>
-        </p>
+      {% if is_new %}
+        <span class="product-card__badge product-card__badge--new">{{ 'products.badge.new' | t }}</span>
+      {% elsif on_sale %}
+        <span class="product-card__badge">{{ 'products.badge.sale' | t }}</span>
+      {% elsif product.available == false %}
+        <span class="product-card__badge product-card__badge--sold-out">{{ 'products.badge.sold_out' | t }}</span>
       {% endif %}
     </div>
 
-    <p class="product-card__price">
-      {% if on_sale %}
-        <span class="product-card__price-sale">{{ product.price | money }}</span>
-        <span class="sr-only">{{ 'products.price.sale' | t }}</span>
-        <s class="product-card__price-compare">{{ product.compare_at_price | money }}</s>
-      {% else %}
-        <span>{{ product.price | money }}</span>
-      {% endif %}
-    </p>
+    <div class="product-card__info">
+      <div class="product-card__title-row">
+        <h3 class="product-card__title">{{ product.title | escape }}</h3>
+        {% if rating_value != blank %}
+          <p class="product-card__rating" aria-label="{{ 'products.rating_label' | t: rating: rating_value, count: rating_count }}">
+            <span class="product-card__rating-value">{{ rating_value }}</span>
+            <span class="product-card__rating-star" aria-hidden="true">★</span>
+          </p>
+        {% endif %}
+      </div>
 
-    {% if color_option and color_option.values.size > 0 %}
-      <ul
-        class="product-card__swatches list-none p-0"
-        role="list"
-        aria-label="{{ 'products.color_options' | t: option: color_option.name }}"
-      >
-        {% for value in color_option.values %}
-          {% render 'product-card-swatch',
-            product: product,
-            value: value,
-            color_option: color_option
-          %}
-        {% endfor %}
-      </ul>
-    {% endif %}
-  </div>
+      <p class="product-card__price">
+        {% if on_sale %}
+          <span class="product-card__price-sale">{{ product.price | money }}</span>
+          <span class="sr-only">{{ 'products.price.sale' | t }}</span>
+          <s class="product-card__price-compare">{{ product.compare_at_price | money }}</s>
+        {% else %}
+          <span>{{ product.price | money }}</span>
+        {% endif %}
+      </p>
+    </div>
+  </a>
+
+  {% if color_option and color_option.values.size > 0 %}
+    <ul
+      class="product-card__swatches list-none p-0"
+      role="list"
+      aria-label="{{ 'products.color_options' | t: option: color_option.name }}"
+    >
+      {% for value in color_option.values %}
+        {% render 'product-card-swatch',
+          product: product,
+          value: value,
+          color_option: color_option
+        %}
+      {% endfor %}
+    </ul>
+  {% endif %}
 </article>
 
 {% stylesheet %}
@@ -180,21 +180,38 @@
     transition: box-shadow 200ms ease, transform 200ms ease;
   }
 
-  .product-card--grid:hover {
+  .product-card--grid:has(.product-card__link:hover),
+  .product-card--grid:has(.product-card__link:focus-visible) {
     box-shadow: 0 8px 24px rgb(0 37 63 / 8%);
     transform: translateY(-1px);
   }
 
-  .product-card__media {
-    position: relative;
-    display: block;
-    overflow: hidden;
+  .product-card__link {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    min-height: 0;
+    color: inherit;
     text-decoration: none;
   }
 
-  .product-card__media:focus-visible {
-    outline: none;
-    box-shadow: inset 0 0 0 2px var(--color-brand-rust, #c57639);
+  .product-card__link:focus-visible {
+    outline: 2px solid var(--color-brand-rust, #c57639);
+    outline-offset: 2px;
+    border-radius: var(--style-border-radius);
+  }
+
+  .product-card:not(.product-card--grid) .product-card__link {
+    gap: 0.75rem;
+  }
+
+  .product-card--grid .product-card__link {
+    flex: 1;
+  }
+
+  .product-card__media {
+    position: relative;
+    overflow: hidden;
   }
 
   .product-card--grid .product-card__media {
@@ -216,13 +233,13 @@
     height: 100%;
   }
 
-  .product-card__image img {
+  .product-card__img {
     width: 100%;
     height: 100%;
     object-fit: cover;
   }
 
-  .product-card--grid .product-card__image img {
+  .product-card--grid .product-card__img {
     object-fit: contain;
     padding: 1rem;
   }
@@ -233,7 +250,7 @@
   }
 
   @media (prefers-reduced-motion: no-preference) {
-    .product-card__media:hover .product-card__image--secondary {
+    .product-card__link:hover .product-card__image--secondary {
       opacity: 1;
     }
   }
@@ -301,19 +318,8 @@
     line-height: 1.3;
   }
 
-  .product-card__title a {
-    color: inherit;
-    text-decoration: none;
-  }
-
-  .product-card__title a:hover {
-    color: var(--color-brand-rust);
-  }
-
-  .product-card__title a:focus-visible {
-    outline: 2px solid var(--color-brand-rust, #c57639);
-    outline-offset: 2px;
-    border-radius: var(--style-border-radius);
+  .product-card__link:hover .product-card__title {
+    color: var(--color-brand-rust, #c57639);
   }
 
   .product-card__rating {
@@ -361,7 +367,15 @@
     flex-wrap: wrap;
     align-items: center;
     gap: 0.375rem;
-    margin: 0.25rem 0 0;
+    margin: 0;
+  }
+
+  .product-card--grid .product-card__swatches {
+    padding: 0 1rem 1rem;
+  }
+
+  .product-card:not(.product-card--grid) .product-card__swatches {
+    margin-top: -0.375rem;
   }
 
   .product-card__swatch {

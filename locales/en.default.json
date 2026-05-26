@@ -127,7 +127,8 @@
     "product_recommendations": {
       "tabs_label": "Product recommendations",
       "related": "Related products",
-      "recently_viewed": "Recently viewed"
+      "recently_viewed": "Recently viewed",
+      "loading": "Loading products"
     },
     "testimonials": {
       "rating_label": "{{ rating }} out of 5 stars"

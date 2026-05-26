@@ -1,0 +1,92 @@
+{% doc %}
+  Renders a loading skeleton grid for product recommendation panels.
+
+  @param {number} count - Number of placeholder cards to show
+{% enddoc %}
+
+{% liquid
+  assign skeleton_count = count | default: 4
+%}
+
+<ul
+  class="collection-page__grid product-recommendations-skeleton list-none p-0"
+  role="list"
+  aria-busy="true"
+  aria-label="{{ 'sections.product_recommendations.loading' | t }}"
+>
+  {% for i in (1..skeleton_count) %}
+    <li>
+      <div class="product-recommendations-skeleton__card">
+        <div class="product-recommendations-skeleton__media product-recommendations-skeleton__pulse"></div>
+        <div class="product-recommendations-skeleton__info">
+          <div class="product-recommendations-skeleton__line product-recommendations-skeleton__line--title product-recommendations-skeleton__pulse"></div>
+          <div class="product-recommendations-skeleton__line product-recommendations-skeleton__line--price product-recommendations-skeleton__pulse"></div>
+        </div>
+      </div>
+    </li>
+  {% endfor %}
+</ul>
+
+{% stylesheet %}
+  .product-recommendations-skeleton__card {
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    border-radius: var(--style-border-radius);
+    background: #fff;
+    box-shadow: 0 1px 0 rgb(0 37 63 / 6%);
+  }
+
+  .product-recommendations-skeleton__media {
+    aspect-ratio: 1 / 1;
+    background-color: color-mix(in srgb, var(--color-brand-steel, #00253f) 6%, white);
+  }
+
+  .product-recommendations-skeleton__info {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    padding: 0.875rem 1rem 1rem;
+  }
+
+  .product-recommendations-skeleton__line {
+    height: 0.75rem;
+    border-radius: var(--style-border-radius);
+  }
+
+  .product-recommendations-skeleton__line--title {
+    width: 78%;
+  }
+
+  .product-recommendations-skeleton__line--price {
+    width: 42%;
+    height: 0.625rem;
+  }
+
+  .product-recommendations-skeleton__pulse {
+    background: linear-gradient(
+      90deg,
+      color-mix(in srgb, var(--color-brand-steel, #00253f) 7%, white) 0%,
+      color-mix(in srgb, var(--color-brand-steel, #00253f) 12%, white) 50%,
+      color-mix(in srgb, var(--color-brand-steel, #00253f) 7%, white) 100%
+    );
+    background-size: 200% 100%;
+    animation: product-recommendations-shimmer 1.25s ease-in-out infinite;
+  }
+
+  @keyframes product-recommendations-shimmer {
+    0% {
+      background-position: 200% 0;
+    }
+
+    100% {
+      background-position: -200% 0;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .product-recommendations-skeleton__pulse {
+      animation: none;
+    }
+  }
+{% endstylesheet %}
