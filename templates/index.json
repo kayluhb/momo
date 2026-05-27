@@ -16,14 +16,14 @@
           "type": "slide",
           "settings": {
             "image": "shopify://shop_images/bare-stony-room-with-two-wooden-benches-and-coffee-tables.jpg",
-            "overlay_opacity": 40,
+            "overlay_opacity": 35,
             "heading": "Heading",
             "subheading": "Subheading",
             "button_label": "Shop Now",
             "button_link": "shopify://collections/frontpage",
             "button_2_label": "",
             "button_2_link": "",
-            "text_color": "warmth",
+            "text_color": "white",
             "text_placement": "center"
           }
         },
